@@ -49,6 +49,12 @@ function ServiceInstanceBindings($filter,
   
   $scope.secretsVersion = APIService.getPreferredVersion('secrets');
   $scope.bindingResource = APIService.getPreferredVersion('servicebindings');
+  // $scope.podPresetResource = APIService.getPreferredVersion('podpreset');
+  $scope.podPresetResource = {
+    group:"settings.k8s.io",
+    resource:"podpresets",
+    version:"v1alpha1"
+  };
 
   var convertSecretToMobileService = function(svc) {
     return svc;
@@ -96,7 +102,6 @@ function ServiceInstanceBindings($filter,
     };
 
     // copy over arbitrary secret keys as params
-    debugger
     for(var key in from.data) {
       if (['uri', 'name'].indexOf(key) < 0) {
         params[key] = atob(from.data[key]).trim();
@@ -164,6 +169,46 @@ function ServiceInstanceBindings($filter,
     };
   };
 
+  var podPreset = function(objectName, secretName, svcName, targetSvcName, namespace, cb) {
+    var newPodPreset = {
+      "kind": "PodPreset",
+      "apiVersion": "settings.k8s.io/v1alpha1",
+      metadata: {
+        name: objectName,
+        labels: {
+          "group":   "mobile",
+          "service": svcName,
+        }
+      },
+      spec: {
+        selector: {
+          matchLabels: {
+            "run":   targetSvcName,
+            "svcName": "enabled",
+          }
+        },
+        volumes: [{
+          name: svcName,
+          volumeSource: {
+            secret: {
+              secretName: secretName,
+            }
+          }
+        }],
+        volumeMounts: [{
+          name:      svcName,
+          mountPath: "/etc/secrets/" + svcName,
+        }]
+      }
+    };
+
+    // TODO: error handling
+    DataService.create($scope.podPresetResource, null, newPodPreset, $scope.context).then(function(preset) {
+      if (!preset) return cb('Pod Preset not created');
+      return cb(null, preset);
+    });
+  };
+
   var bindToService = function(bindableService, targetSvcName, params, bindableSvcNamespace, targetSvcNamespace, cb) {
     var objectName = bindableService + "-" + targetSvcName;
 
@@ -180,14 +225,22 @@ function ServiceInstanceBindings($filter,
           // create binding
           //BindingService.bindService(svcInst, null, bindableServiceClass, params).then(function(binding){
           DataService.create($scope.bindingResource, null, newBinding, $scope.context).then(function(binding) {
-            
+            // create pod preset
+            podPreset(objectName, objectName, bindableService, targetSvcName, targetSvcNamespace, function(err) {
+              if (err) return alert(err);
+              // update the deployment with an annotation
+              // dep, err := sc.k8client.AppsV1beta1().Deployments(targetSvcNamespace).Get(targetSvcName, meta_v1.GetOptions{})
+              // if err != nil {
+              //   return errors.Wrap(err, "failed to get deployment for service "+targetSvcName)
+              // }
+
+              // dep.Spec.Template.Labels[bindableService] = "enabled"
+              // dep.Spec.Template.Labels[bindableService+"-binding"] = bindingResp.Name
+              // if _, err := sc.k8client.AppsV1beta1().Deployments(targetSvcNamespace).Update(dep); err != nil {
+              //   return errors.Wrap(err, "failed up update deployment for "+targetSvcName)
+              // }
+            });
           });
-
-          // create pod preset
-          
-          
-          // update the deployment with an annotation
-
       });
     });
   };
