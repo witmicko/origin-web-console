@@ -49,6 +49,7 @@ function ServiceInstanceBindings($filter,
   
   $scope.secretsVersion = APIService.getPreferredVersion('secrets');
   $scope.bindingResource = APIService.getPreferredVersion('servicebindings');
+  $scope.deploymentResource = APIService.getPreferredVersion('deployments');
   // $scope.podPresetResource = APIService.getPreferredVersion('podpreset');
   $scope.podPresetResource = {
     group:"settings.k8s.io",
@@ -202,7 +203,7 @@ function ServiceInstanceBindings($filter,
       }
     };
 
-    // TODO: error handling
+    // TODO: better error handling
     DataService.create($scope.podPresetResource, null, newPodPreset, $scope.context).then(function(preset) {
       if (!preset) return cb('Pod Preset not created');
       return cb(null, preset);
@@ -227,18 +228,26 @@ function ServiceInstanceBindings($filter,
           DataService.create($scope.bindingResource, null, newBinding, $scope.context).then(function(binding) {
             // create pod preset
             podPreset(objectName, objectName, bindableService, targetSvcName, targetSvcNamespace, function(err) {
-              if (err) return alert(err);
+              if (err) return cb(err);
               // update the deployment with an annotation
-              // dep, err := sc.k8client.AppsV1beta1().Deployments(targetSvcNamespace).Get(targetSvcName, meta_v1.GetOptions{})
-              // if err != nil {
-              //   return errors.Wrap(err, "failed to get deployment for service "+targetSvcName)
-              // }
+              DataService.get($scope.deploymentResource, targetSvcName, $scope.context, { errorNotification: false }).then(
+                function(dep) {
+                  dep.spec.template.metadata.labels.bindableService = 'enabled';
+                  dep.spec.template.metadata.labels[bindableService+"-binding"] = binding.metadata.name;
 
-              // dep.Spec.Template.Labels[bindableService] = "enabled"
-              // dep.Spec.Template.Labels[bindableService+"-binding"] = bindingResp.Name
-              // if _, err := sc.k8client.AppsV1beta1().Deployments(targetSvcNamespace).Update(dep); err != nil {
-              //   return errors.Wrap(err, "failed up update deployment for "+targetSvcName)
-              // }
+                  DataService.update($scope.deploymentResource, targetSvcName, dep, $scope.context).then(
+                    function() {
+                      return cb(null);
+                    },
+                    function(e) {
+                      return cb("failed up update deployment for "+targetSvcName + e);
+                    }
+                  );
+                },
+                function(e) {
+                  return alert("failed to get deployment for service "+targetSvcName + e);
+                }
+              );
             });
           });
       });
