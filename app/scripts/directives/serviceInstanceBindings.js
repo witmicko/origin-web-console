@@ -217,7 +217,7 @@ function ServiceInstanceBindings($filter,
       if (err) return cb(err);
       serviceInstancesForServiceClass(bindableServiceClass.spec.externalName, targetSvcNamespace, function(err, svcInstList) {
         if (err) return cb(err);
-        if (svcInstList.length === 0) return alert("no service instance of " + bindableService + " found in ns " + targetSvcNamespace)
+        if (svcInstList.length === 0) return cb("no service instance of " + bindableService + " found in ns " + targetSvcNamespace)
 
           // only care about the first one as there only should ever be one.
         	var svcInst = svcInstList[0];
@@ -245,7 +245,7 @@ function ServiceInstanceBindings($filter,
                   );
                 },
                 function(e) {
-                  return alert("failed to get deployment for service "+targetSvcName + e);
+                  return cb("failed to get deployment for service "+targetSvcName + e);
                 }
               );
             });
@@ -254,8 +254,27 @@ function ServiceInstanceBindings($filter,
     });
   };
 
-  var updateEnabledIntegrations = function(targetMobileServiceID, integrationParams) {
-    // TODO
+  var updateEnabledIntegrations = function(svcName, integrations, cb) {
+    DataService.get($scope.secretsVersion, svcName, $scope.context, { errorNotification: false }).then(
+    function(secret) {
+      secret.metadata.labels = secret.metadata.labels || {};
+
+      for (var key in integrations) {
+        secret.metadata.labels[key] = integrations[key];
+      }
+
+      DataService.update($scope.secretsVersion, svcName, secret, $scope.context).then(
+        function() {
+          return cb(null);
+        },
+        function(e) {
+          return cb("failed up update secret "+svcName + e);
+        }
+      );
+    },
+    function(e) {
+      return cb("failed to get secret  "+svcName + e);
+    });
   };
 
   var bindMobileServices = function(targetMobileServiceID, bindableMobileServiceID) {
@@ -277,8 +296,11 @@ function ServiceInstanceBindings($filter,
 
         // TODO: update 'enabled' integrations on secret
         var integrationParams = {};
-        integrationParams[atob(mobileService.data.name).trim()] = true;
-        updateEnabledIntegrations(targetMobileServiceID, integrationParams);
+        integrationParams[atob(mobileService.data.name).trim()] = "true";
+        updateEnabledIntegrations(targetMobileServiceID, integrationParams, function(err) {
+          if (err) return alert(err);
+          // DONE
+        });
       });
     });
   };
