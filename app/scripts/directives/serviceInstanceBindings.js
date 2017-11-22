@@ -48,6 +48,7 @@ function ServiceInstanceBindings($filter,
   };
   
   $scope.secretsVersion = APIService.getPreferredVersion('secrets');
+  $scope.bindingResource = APIService.getPreferredVersion('servicebindings');
 
   var convertSecretToMobileService = function(svc) {
     return svc;
@@ -94,7 +95,13 @@ function ServiceInstanceBindings($filter,
       service_secret: to.metadata.name // ID
     };
 
-    // TODO copy over arbitrary params
+    // copy over arbitrary secret keys as params
+    debugger
+    for(var key in from.data) {
+      if (['uri', 'name'].indexOf(key) < 0) {
+        params[key] = atob(from.data[key]).trim();
+      }
+    }
 
     // TODO 3scale
     if (atob(from.data.name).trim() === 'keycloak') {
@@ -104,9 +111,85 @@ function ServiceInstanceBindings($filter,
     return params;
   };
 
-  var bindToService = function(bindableService, targetSvcName, params, bindableSvcNamespace, targetSvcNamespace) {
-    // TODO
-    debugger
+  var serviceClassByServiceName = function(name, cb) {
+    var serviceClassesVersion = APIService.getPreferredVersion('clusterserviceclasses');
+    DataService.list(serviceClassesVersion, {}).then(function(serviceClasses) {
+      var serviceClass = _.find(serviceClasses.by('metadata.name'), {
+        spec: {
+          externalMetadata: {
+            serviceName: name
+          }
+        }
+      });
+      if (!serviceClass) {
+        return cb("failed to find service class for service " + name)
+      }
+      return cb(null, serviceClass);
+    });
+  };
+
+  var serviceInstancesForServiceClass = function(serviceClass, ns, cb) {
+    ProjectsService
+    .get($routeParams.project)
+    .then(_.spread(function(project, context) {
+        $scope.project = project;
+        $scope.context = context;
+        var serviceInstanceVersion = APIService.getPreferredVersion('serviceinstances');
+        DataService.list(serviceInstanceVersion, context).then(function(serviceInstances) {
+          $scope.unfilteredServiceInstances = serviceInstances.by('metadata.name');
+          var matchingServiceInstances = _.filter($scope.unfilteredServiceInstances, {
+            spec: {
+              clusterServiceClassExternalName: serviceClass
+            }
+          });
+          return cb(null, matchingServiceInstances);
+        });
+    }));
+  };
+
+  var createBindingObject = function(instance, params, secretName) {
+    return {
+      "kind": "ServiceBinding",
+      "apiVersion": "servicecatalog.k8s.io/v1beta1",
+      "metadata":{
+        "generateName": instance + '-'
+      },
+      "spec": {
+        "instanceRef":{
+          "name": instance
+        },
+        "secretName": secretName,
+        "parameters": params
+      }
+    };
+  };
+
+  var bindToService = function(bindableService, targetSvcName, params, bindableSvcNamespace, targetSvcNamespace, cb) {
+    var objectName = bindableService + "-" + targetSvcName;
+
+    serviceClassByServiceName(bindableService, function(err, bindableServiceClass) {
+      if (err) return cb(err);
+      serviceInstancesForServiceClass(bindableServiceClass.spec.externalName, targetSvcNamespace, function(err, svcInstList) {
+        if (err) return cb(err);
+        if (svcInstList.length === 0) return alert("no service instance of " + bindableService + " found in ns " + targetSvcNamespace)
+
+          // only care about the first one as there only should ever be one.
+        	var svcInst = svcInstList[0];
+          var newBinding = createBindingObject(svcInst.metadata.name, params, objectName)
+
+          // create binding
+          //BindingService.bindService(svcInst, null, bindableServiceClass, params).then(function(binding){
+          DataService.create($scope.bindingResource, null, newBinding, $scope.context).then(function(binding) {
+            
+          });
+
+          // create pod preset
+          
+          
+          // update the deployment with an annotation
+
+      });
+    });
   };
 
   var updateEnabledIntegrations = function(targetMobileServiceID, integrationParams) {
@@ -118,21 +201,23 @@ function ServiceInstanceBindings($filter,
     readSecrets(bindableMobileServiceID, targetMobileServiceID, function(err, mobileService, targetService) {
       if (err) return alert(err);
 
-      // TODO: namespaces for services
+      // namespaces for services
       var targetSvcNamespace = targetService.metadata.namespace;
       var bindableSvcNamespace = mobileService.metadata.namespace;
 
-      // TODO: setup bind params
+      // setup bind params
       var bindParams = buildBindParams(mobileService, targetService);
 
       // TODO: APIKeys
-      // TODO: bind services
-      bindToService(atob(mobileService.data.name).trim(), atob(targetService.data.name).trim(), bindParams, bindableSvcNamespace, targetSvcNamespace);
+      // bind services
+      bindToService(atob(mobileService.data.name).trim(), atob(targetService.data.name).trim(), bindParams, bindableSvcNamespace, targetSvcNamespace, function(err) {
+        if (err) return alert(err);
 
-      // TODO: update 'enabled' integrations on secret
-      var integrationParams = {};
-      integrationParams[atob(mobileService.data.name).trim()] = true;
-      updateEnabledIntegrations(targetMobileServiceID, integrationParams);
+        // TODO: update 'enabled' integrations on secret
+        var integrationParams = {};
+        integrationParams[atob(mobileService.data.name).trim()] = true;
+        updateEnabledIntegrations(targetMobileServiceID, integrationParams);
+      });
     });
   };
 
