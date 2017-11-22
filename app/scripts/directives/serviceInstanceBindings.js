@@ -184,8 +184,7 @@ function ServiceInstanceBindings($filter,
       spec: {
         selector: {
           matchLabels: {
-            "run":   targetSvcName,
-            "svcName": "enabled",
+            "run":   targetSvcName
           }
         },
         volumes: [{
@@ -202,6 +201,7 @@ function ServiceInstanceBindings($filter,
         }]
       }
     };
+    newPodPreset.spec.selector.matchLabels[svcName] = "enabled";
 
     // TODO: better error handling
     DataService.create($scope.podPresetResource, null, newPodPreset, $scope.context).then(function(preset) {
@@ -232,7 +232,7 @@ function ServiceInstanceBindings($filter,
               // update the deployment with an annotation
               DataService.get($scope.deploymentResource, targetSvcName, $scope.context, { errorNotification: false }).then(
                 function(dep) {
-                  dep.spec.template.metadata.labels.bindableService = 'enabled';
+                  dep.spec.template.metadata.labels[bindableService] = 'enabled';
                   dep.spec.template.metadata.labels[bindableService+"-binding"] = binding.metadata.name;
 
                   DataService.update($scope.deploymentResource, targetSvcName, dep, $scope.context).then(
