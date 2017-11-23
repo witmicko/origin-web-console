@@ -33,8 +33,13 @@ function ServiceInstanceBindings($filter,
                                  BindingService,
                                  DataService) {
   var ctrl = this;
+
   var canI = $filter('canI');
   var serviceBindingsVersion = ctrl.serviceBindingsVersion = APIService.getPreferredVersion('servicebindings');
+
+  const INTEGRATION_API_KEYS = 'mcp-mobile-keys';
+  const INTEGRATION_KEYCLOAK = 'keycloak';
+  const INTEGRATION_FH_SYNC_SERVER = 'fh-sync-server';
 
   var checkBindable = function() {
     ctrl.bindable = canI(serviceBindingsVersion, 'create') &&
@@ -43,11 +48,13 @@ function ServiceInstanceBindings($filter,
                                                      ctrl.servicePlan);
   };
 
+  var checkIsFHSyncServer = function() {
+    ctrl.isFHSyncServer = ctrl.serviceClass.spec.externalMetadata.serviceName === INTEGRATION_FH_SYNC_SERVER;
+  };
+
   ctrl.createBinding = function() {
     ctrl.overlayPanelVisible = true;
   };
-
-  const INTEGRATION_API_KEYS = 'mcp-mobile-keys';
   
   $scope.secretsVersion = APIService.getPreferredVersion('secrets');
   $scope.bindingResource = APIService.getPreferredVersion('servicebindings');
@@ -112,7 +119,7 @@ function ServiceInstanceBindings($filter,
     }
 
     // TODO 3scale
-    if (atob(from.data.name).trim() === 'keycloak') {
+    if (atob(from.data.name).trim() === INTEGRATION_KEYCLOAK) {
       params.service_name = atob(to.data.name).trim(); // Name
     }
 
@@ -312,21 +319,28 @@ function ServiceInstanceBindings($filter,
       var targetSvcNamespace = targetService.metadata.namespace;
       var bindableSvcNamespace = mobileService.metadata.namespace;
 
-      // setup bind params
-      var bindParams = buildBindParams(mobileService, targetService);
-
       if (INTEGRATION_API_KEYS === atob(mobileService.data.name).trim()) {
         // api keys
         addMobileApiKeys(atob(targetService.data.name).trim(), targetSvcNamespace, function(err) {
+          if (err) return alert(err);
+
+          // TODO: de-dupe this code with below block
+          // update 'enabled' integrations on secret
+          var integrationParams = {};
+          integrationParams[atob(mobileService.data.name).trim()] = "true";
+          updateEnabledIntegrations(targetMobileServiceID, integrationParams, function(err) {
             if (err) return alert(err);
             // DONE
           });
+        });
       } else {
+        // setup bind params
+        var bindParams = buildBindParams(mobileService, targetService);
         // bind services
         bindToService(atob(mobileService.data.name).trim(), atob(targetService.data.name).trim(), bindParams, bindableSvcNamespace, targetSvcNamespace, function(err) {
           if (err) return alert(err);
 
-          // TODO: update 'enabled' integrations on secret
+          // update 'enabled' integrations on secret
           var integrationParams = {};
           integrationParams[atob(mobileService.data.name).trim()] = "true";
           updateEnabledIntegrations(targetMobileServiceID, integrationParams, function(err) {
@@ -339,10 +353,16 @@ function ServiceInstanceBindings($filter,
   };
 
   ctrl.createBindingFromKeycloakToFHSyncServer = function() {
-    var bindableMobileServiceID = 'keycloak';
-    var targetMobileServiceID = 'fh-sync-server';
+    var bindableMobileServiceID = INTEGRATION_KEYCLOAK;
+    var targetMobileServiceID = INTEGRATION_FH_SYNC_SERVER;
     bindMobileServices(targetMobileServiceID, bindableMobileServiceID);
   }
+
+  ctrl.createBindingFromAPIKeysToFHSyncServer = function() {
+    var bindableMobileServiceID = INTEGRATION_API_KEYS;
+    var targetMobileServiceID = INTEGRATION_FH_SYNC_SERVER;
+    bindMobileServices(targetMobileServiceID, bindableMobileServiceID);
+  };
 
   ctrl.closeOverlayPanel = function() {
     ctrl.overlayPanelVisible = false;
@@ -350,5 +370,6 @@ function ServiceInstanceBindings($filter,
 
   ctrl.$onChanges = function() {
     checkBindable();
+    checkIsFHSyncServer();
   };
 }

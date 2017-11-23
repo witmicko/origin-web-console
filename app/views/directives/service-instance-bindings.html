@@ -1,4 +1,4 @@
-<div ng-if="$ctrl.bindable || ($ctrl.bindings | size)">
+<div ng-if="$ctrl.bindable || ($ctrl.bindings | size) || $ctrl.isFHSyncServer">
   <h3 ng-if="$ctrl.showHeader">Bindings</h3>
   <service-binding
     ng-repeat="binding in $ctrl.bindings track by (binding | uid)"
@@ -12,12 +12,19 @@
       <span class="pficon pficon-add-circle-o" aria-hidden="true"></span>
       Create Binding
     </a>
+  </p>
+
+  <p ng-if="$ctrl.isFHSyncServer">
     <a href="" ng-click="$ctrl.createBindingFromKeycloakToFHSyncServer()" role="button">
       <span class="pficon pficon-add-circle-o" aria-hidden="true"></span>
-      Bind to FeedHenry Sync Server
+      Enable Keycloak Integration
+    </a>
+    <a href="" ng-click="$ctrl.createBindingFromAPIKeysToFHSyncServer()" role="button">
+      <span class="pficon pficon-add-circle-o" aria-hidden="true"></span>
+      Enable API Keys Integration
     </a>
   </p>
-  <p ng-if="!$ctrl.bindable && !($ctrl.bindings | size)">
+  <p ng-if="!$ctrl.bindable && !($ctrl.bindings | size) && ($ctrl.isFHSyncServer == false)">
     <span>There are no service bindings.</span>
   </p>
 </div>
