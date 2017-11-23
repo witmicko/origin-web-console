@@ -46,6 +46,8 @@ function ServiceInstanceBindings($filter,
   ctrl.createBinding = function() {
     ctrl.overlayPanelVisible = true;
   };
+
+  const INTEGRATION_API_KEYS = 'mcp-mobile-keys';
   
   $scope.secretsVersion = APIService.getPreferredVersion('secrets');
   $scope.bindingResource = APIService.getPreferredVersion('servicebindings');
@@ -238,7 +240,7 @@ function ServiceInstanceBindings($filter,
                       return cb(null);
                     },
                     function(e) {
-                      return cb("failed up update deployment for "+targetSvcName + e);
+                      return cb("failed to update deployment for "+targetSvcName + e);
                     }
                   );
                 },
@@ -274,6 +276,32 @@ function ServiceInstanceBindings($filter,
       return cb("failed to get secret  "+svcName + e);
     });
   };
+  
+  var addMobileApiKeys = function(targetSvcName, namespace, cb) {
+	  var objectName = INTEGRATION_API_KEYS + "-" + targetSvcName;
+    // create pod preset
+    podPreset(objectName, INTEGRATION_API_KEYS, INTEGRATION_API_KEYS, targetSvcName, namespace, function(err) {
+      if (err) return cb(err);
+      // update the deployment with an annotation
+      DataService.get($scope.deploymentResource, targetSvcName, $scope.context, { errorNotification: false }).then(
+        function(dep) {
+          dep.spec.template.metadata.labels[INTEGRATION_API_KEYS] = 'enabled';
+
+          DataService.update($scope.deploymentResource, targetSvcName, dep, $scope.context).then(
+            function() {
+              return cb(null);
+            },
+            function(e) {
+              return cb("failed to update deployment for "+targetSvcName + e);
+            }
+          );
+        },
+        function(e) {
+          return cb("failed to get deployment for service "+targetSvcName + e);
+        }
+      );
+    });
+  };
 
   var bindMobileServices = function(targetMobileServiceID, bindableMobileServiceID) {
     // read secrets that represent services
@@ -287,19 +315,26 @@ function ServiceInstanceBindings($filter,
       // setup bind params
       var bindParams = buildBindParams(mobileService, targetService);
 
-      // TODO: APIKeys
-      // bind services
-      bindToService(atob(mobileService.data.name).trim(), atob(targetService.data.name).trim(), bindParams, bindableSvcNamespace, targetSvcNamespace, function(err) {
-        if (err) return alert(err);
-
-        // TODO: update 'enabled' integrations on secret
-        var integrationParams = {};
-        integrationParams[atob(mobileService.data.name).trim()] = "true";
-        updateEnabledIntegrations(targetMobileServiceID, integrationParams, function(err) {
+      if (INTEGRATION_API_KEYS === atob(mobileService.data.name).trim()) {
+        // api keys
+        addMobileApiKeys(atob(targetService.data.name).trim(), targetSvcNamespace, function(err) {
+            if (err) return alert(err);
+            // DONE
+          });
+      } else {
+        // bind services
+        bindToService(atob(mobileService.data.name).trim(), atob(targetService.data.name).trim(), bindParams, bindableSvcNamespace, targetSvcNamespace, function(err) {
           if (err) return alert(err);
-          // DONE
+
+          // TODO: update 'enabled' integrations on secret
+          var integrationParams = {};
+          integrationParams[atob(mobileService.data.name).trim()] = "true";
+          updateEnabledIntegrations(targetMobileServiceID, integrationParams, function(err) {
+            if (err) return alert(err);
+            // DONE
+          });
         });
-      });
+      }
     });
   };
 
