@@ -189,10 +189,8 @@ function ServiceInstanceBindings($filter,
         },
         volumes: [{
           name: svcName,
-          volumeSource: {
-            secret: {
-              secretName: secretName,
-            }
+          secret: {
+            secretName: secretName,
           }
         }],
         volumeMounts: [{
