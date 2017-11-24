@@ -50,7 +50,7 @@ function ServiceInstanceBindings($filter,
   };
 
   var checkIsFHSyncServer = function() {
-    ctrl.isFHSyncServer = ctrl.serviceClass.spec.externalMetadata.serviceName === INTEGRATION_FH_SYNC_SERVER;
+    ctrl.isFHSyncServer = ctrl.serviceClass && (ctrl.serviceClass.spec.externalMetadata.serviceName === INTEGRATION_FH_SYNC_SERVER);
   };
 
   var checkIsMobileIntegrationEnabled = function() {
@@ -63,8 +63,17 @@ function ServiceInstanceBindings($filter,
 
         DataService.get($scope.secretsVersion, INTEGRATION_FH_SYNC_SERVER, context, { errorNotification: false }).then(
           function(secret) {
-            ctrl.mobileIntegrations[INTEGRATION_API_KEYS] = JSON.parse(secret.metadata.labels[INTEGRATION_API_KEYS]);
-            ctrl.mobileIntegrations[INTEGRATION_KEYCLOAK] = JSON.parse(secret.metadata.labels[INTEGRATION_KEYCLOAK]);
+            try {
+              ctrl.mobileIntegrations[INTEGRATION_API_KEYS] = JSON.parse(secret.metadata.labels[INTEGRATION_API_KEYS]);
+            } catch (e) {
+              ctrl.mobileIntegrations[INTEGRATION_API_KEYS] = false;
+            }
+
+            try {
+              ctrl.mobileIntegrations[INTEGRATION_KEYCLOAK] = JSON.parse(secret.metadata.labels[INTEGRATION_KEYCLOAK]);
+            } catch (e) {
+              ctrl.mobileIntegrations[INTEGRATION_KEYCLOAK] = false;
+            }
           },
           function(e) {
             return alert('Unable to read secret ' + INTEGRATION_FH_SYNC_SERVER + e);
