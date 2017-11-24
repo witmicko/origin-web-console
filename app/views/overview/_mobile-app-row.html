@@ -7,7 +7,7 @@
       <div class="list-pf-name">
         <h3>
           <span class="fa" ng-class="row.icon" aria-hidden="true"></span>
-          <a ng-href="{{row.apiObject | navigateResourceURL}}" ng-bind-html="row.apiObject.metadata.labels.name | highlightKeywords : row.state.filterKeywords"></a>
+          <a ng-href="project/{{ row.state.project.metadata.name }}/browse/mobileapps/{{ row.apiObject.metadata.name }}" ng-bind-html="row.apiObject.metadata.labels.name | highlightKeywords : row.state.filterKeywords"></a>
           <div ng-bind-html="row.apiObject.metadata.name | highlightKeywords : row.state.filterKeywords" class="list-row-longname"></div>
         </h3>
       </div>
