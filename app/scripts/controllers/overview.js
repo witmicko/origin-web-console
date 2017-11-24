@@ -323,7 +323,13 @@ function OverviewController($scope,
                             _.keys(overview.filteredStatefulSetsByApp),
                             _.keys(overview.filteredMonopodsByApp));
 
-    overview.mobileapps = overview.filteredConfigMaps;
+    overview.mobileapps = _.filter(overview.filteredConfigMaps, {
+      metadata: {
+        labels: {
+          group: 'mobileapp'
+        }
+      }
+    });
 
     AppsService.sortAppNames(overview.apps);
     updateRoutesByApp();
