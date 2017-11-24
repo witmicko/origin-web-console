@@ -360,6 +360,22 @@
               </div>
             </div>
 
+            <!-- Show Mobile Apps -->
+            <div ng-if="overview.mobileapps">
+              <h2>
+                Mobile Applications
+                <div class="pull-right">
+                  <a ng-href="project/{{project.metadata.name}}/create-mobileapp" class="btn btn-default">Create Mobile Application</a>
+                </div>
+              </h2>
+              <div class="list-pf">
+                <mobile-app-row
+                  ng-repeat="mobileapp in overview.mobileapps"
+                  api-object="mobileapp"
+                  state="overview.state"></mobile-app-row>
+              </div>
+            </div>
+
             <!-- Show provisioned services. -->
             <div ng-if="overview.filteredServiceInstances.length && !overview.hidePipelineOtherResources">
               <h2>

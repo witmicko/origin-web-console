@@ -36,6 +36,9 @@
     <!-- Local / test stylesheets only. These files will not be included in the built dist. -->
     <link rel="stylesheet" type="text/css" href="extensions/local-extensions.css">
     <!-- endbuild -->
+    <link rel="stylesheet" type="text/css" href="styles/extensions.css">
+    <!--<link rel="stylesheet" type="text/css" href="styles/mcp.css"/>
+    <link rel="stylesheet" type="text/css" href="styles/mcp-vendor.css"/>-->
     <style type="text/css">
 
     </style>
@@ -381,6 +384,7 @@
         <script src="scripts/directives/overview/builds.js"></script>
         <script src="scripts/directives/overview/listRow.js"></script>
         <script src="scripts/directives/overview/serviceInstanceRow.js"></script>
+        <script src="scripts/directives/overview/mobileAppRow.js"></script>
         <script src="scripts/directives/overview/networking.js"></script>
         <script src="scripts/directives/overview/pipelines.js"></script>
         <script src="scripts/directives/overview/serviceBindings.js"></script>
@@ -412,9 +416,18 @@
         <script src="scripts/extensions/nav/dropdownMobile.js"></script>
         <!-- endbuild -->
 
+<<<<<<< HEAD
         <!-- build:remove -->
         <!-- Local / test scripts only. These files will not be included in the built dist. -->
         <script src="extensions/local-extensions.js"></script>
         <!-- endbuild -->
+=======
+    <!-- Load any extensions last. -->
+    <script src="scripts/extensions.js"></script>
+    <!--<script src="scripts/mcp-vendor.js"></script>
+    <script src="scripts/mcp.js"></script>-->
+
+
+>>>>>>> Mobile Applications on Overview screen
 </body>
 </html>

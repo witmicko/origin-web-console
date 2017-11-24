@@ -33,6 +33,7 @@ function ServiceInstanceBindings($filter,
                                  BindingService,
                                  DataService) {
   var ctrl = this;
+  ctrl.mobileIntegrations = {};
 
   var canI = $filter('canI');
   var serviceBindingsVersion = ctrl.serviceBindingsVersion = APIService.getPreferredVersion('servicebindings');
@@ -50,6 +51,26 @@ function ServiceInstanceBindings($filter,
 
   var checkIsFHSyncServer = function() {
     ctrl.isFHSyncServer = ctrl.serviceClass.spec.externalMetadata.serviceName === INTEGRATION_FH_SYNC_SERVER;
+  };
+
+  var checkIsMobileIntegrationEnabled = function() {
+    if (ctrl.isFHSyncServer) {
+      ProjectsService
+      .get($routeParams.project)
+      .then(_.spread(function(project, context) {
+        $scope.project = project;
+        $scope.context = context;
+
+        DataService.get($scope.secretsVersion, INTEGRATION_FH_SYNC_SERVER, context, { errorNotification: false }).then(
+          function(secret) {
+            ctrl.mobileIntegrations[INTEGRATION_API_KEYS] = JSON.parse(secret.metadata.labels[INTEGRATION_API_KEYS]);
+            ctrl.mobileIntegrations[INTEGRATION_KEYCLOAK] = JSON.parse(secret.metadata.labels[INTEGRATION_KEYCLOAK]);
+          },
+          function(e) {
+            return alert('Unable to read secret ' + INTEGRATION_FH_SYNC_SERVER + e);
+          });
+      }));
+    }
   };
 
   ctrl.createBinding = function() {
@@ -93,12 +114,6 @@ function ServiceInstanceBindings($filter,
             return cb(null, convertSecretToMobileService(secret1), convertSecretToMobileService(secret2));
           },
           function(e) {
-            $scope.loaded = true;
-            $scope.alerts["load"] = {
-              type: "error",
-              message: "Secret details could not be loaded.",
-              details: $filter('getErrorDetails')(e)
-            };
             return cb(e);
           });
     }));
@@ -352,16 +367,28 @@ function ServiceInstanceBindings($filter,
     });
   };
 
-  ctrl.createBindingFromKeycloakToFHSyncServer = function() {
+  ctrl.enableBindingFromKeycloakToFHSyncServer = function() {
     var bindableMobileServiceID = INTEGRATION_KEYCLOAK;
     var targetMobileServiceID = INTEGRATION_FH_SYNC_SERVER;
     bindMobileServices(targetMobileServiceID, bindableMobileServiceID);
   }
 
-  ctrl.createBindingFromAPIKeysToFHSyncServer = function() {
+  ctrl.enableBindingFromAPIKeysToFHSyncServer = function() {
     var bindableMobileServiceID = INTEGRATION_API_KEYS;
     var targetMobileServiceID = INTEGRATION_FH_SYNC_SERVER;
     bindMobileServices(targetMobileServiceID, bindableMobileServiceID);
+  };
+  
+  ctrl.disableBindingFromKeycloakToFHSyncServer = function() {
+    var bindableMobileServiceID = INTEGRATION_KEYCLOAK;
+    var targetMobileServiceID = INTEGRATION_FH_SYNC_SERVER;
+    // TODO
+  }
+
+  ctrl.disableBindingFromAPIKeysToFHSyncServer = function() {
+    var bindableMobileServiceID = INTEGRATION_API_KEYS;
+    var targetMobileServiceID = INTEGRATION_FH_SYNC_SERVER;
+    // TODO
   };
 
   ctrl.closeOverlayPanel = function() {
@@ -371,5 +398,6 @@ function ServiceInstanceBindings($filter,
   ctrl.$onChanges = function() {
     checkBindable();
     checkIsFHSyncServer();
+    checkIsMobileIntegrationEnabled();
   };
 }
