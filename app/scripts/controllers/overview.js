@@ -300,6 +300,8 @@ function OverviewController($scope,
                             _.keys(overview.filteredStatefulSetsByApp),
                             _.keys(overview.filteredMonopodsByApp));
 
+    overview.mobileapps = overview.filteredConfigMaps;
+
     AppsService.sortAppNames(overview.apps);
     updateRoutesByApp();
   };
@@ -355,6 +357,7 @@ function OverviewController($scope,
   };
 
   var updateFilter = function() {
+    overview.filteredConfigMaps = filterItems(overview.configMaps);
     overview.filteredDeploymentConfigs = filterItems(overview.deploymentConfigs);
     overview.filteredReplicationControllers = filterItems(overview.vanillaReplicationControllers);
     overview.filteredDeployments = filterItems(overview.deployments);
@@ -1189,6 +1192,18 @@ function OverviewController($scope,
                                                            state.imageStreamImageRefByDockerReference,
                                                            context);
     };
+
+    watches.push(DataService.watch("configmaps", context, function(configMapsData) {
+      overview.configMaps = configMapsData.by("metadata.name");
+      // groupPods();
+      // updateReferencedImageStreams();
+      // updateWarnings();
+      // updateServicesForObjects(overview.monopods);
+      // updatePodWarnings(overview.monopods);
+      // updateLabelSuggestions(overview.monopods);
+      updateFilter();
+      Logger.log("configmaps (subscribe)", overview.configMaps);
+    }));
 
     watches.push(DataService.watch("pods", context, function(podsData) {
       overview.pods = podsData.by("metadata.name");
