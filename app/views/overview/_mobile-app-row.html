@@ -19,6 +19,27 @@
     ng-class="{ in: row.expanded }">
     <div class="list-pf-container">
       <div class="expanded-section">
+        <div class="section-title hidden-xs">Builds</div>
+        <div ng-if="loading">
+          Loading...
+        </div>
+        <div ng-if="!loading">
+          <div class="mp-config-actions clearfix">
+            <div ng-if="buildConfig && hasMobileCiCd"  class="pull-right">
+              <!-- ng-if="'buildconfigs/instantiate' | canI : 'create'"  -->
+              <button ng-disabled="view === 'edit'" type="button" class="btn btn-default" ng-click="startBuild()">Build App</button>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="build-pipelines" ng-repeat="build in orderedBuilds">
+                <build-pipeline build=build></build-pipeline>
+                <mp-app-download build=build></mp-app-download>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="section-title hidden-xs">SDK Config</div>
         <pre class="prettyprint lang-json">
 {{ row.sdkConfig }}</pre>
       </div>
