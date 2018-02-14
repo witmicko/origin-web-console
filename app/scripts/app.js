@@ -450,6 +450,24 @@ angular
       .when('/project/:project/browse/deployments-replicationcontrollers/:rc', {
         redirectTo: '/project/:project/browse/rc/:rc'
       })
+      .when('/checkMobileEnabled', {
+        templateUrl: 'views/test-list-resources.html',
+        controller: function($scope, APIService) {
+          // Get all available resources
+          $scope.resources = APIService.availableKinds();
+          console.log("RESOURCES: ", $scope.resources);
+          // Set mobileEnabled to true if MobileClient resource is found
+          $scope.isMobileEnabled = false;
+          var mobileClient = _.find($scope.resources, function(resource) {
+            return resource.kind === "MobileClient";
+          });
+
+          if (mobileClient !== null) {
+            $scope.isMobileEnabled = true;
+          }
+          console.log("Is Mobile Enabled? ", $scope.isMobileEnabled);
+        }
+      })
       .otherwise({
         redirectTo: '/'
       });
