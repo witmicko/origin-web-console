@@ -1355,6 +1355,9 @@ redirectTo: "/project/:project/browse/dc/:deploymentconfig"
 redirectTo: "/project/:project/browse/rc/:rc"
 }).when("/project/:project/browse/deployments-replicationcontrollers/:rc", {
 redirectTo: "/project/:project/browse/rc/:rc"
+}).when("/checkMobileEnabled", {
+templateUrl: "views/test-list-resources.html",
+controller: "TestListResourcesController"
 }).otherwise({
 redirectTo: "/"
 }), t.options = {

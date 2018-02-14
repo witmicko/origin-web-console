@@ -13908,6 +13908,15 @@ angular.module('openshiftConsoleTemplates', []).run(['$templateCache', function(
   );
 
 
+  $templateCache.put('views/test-list-resources.html',
+    "<div class=\"middle\">\n" +
+    "<div repeat=\"resource in resources\">\n" +
+    "Resource: {{resource}}\n" +
+    "</div>\n" +
+    "</div>"
+  );
+
+
   $templateCache.put('views/util/error.html',
     "<div class=\"middle surface-shaded\">\n" +
     "<div class=\"container\">\n" +
