@@ -1061,6 +1061,8 @@ reloadOnSearch: !1
 redirectTo: function() {
 return n.$get().getHomePagePath();
 }
+}).when("/checkMobileEnabled", {
+templateUrl: "views/aerogear_mobile_enabled.html"
 }).when("/catalog", r).when("/create-project", {
 templateUrl: "views/create-project.html",
 controller: "CreateProjectController"
@@ -1355,9 +1357,6 @@ redirectTo: "/project/:project/browse/dc/:deploymentconfig"
 redirectTo: "/project/:project/browse/rc/:rc"
 }).when("/project/:project/browse/deployments-replicationcontrollers/:rc", {
 redirectTo: "/project/:project/browse/rc/:rc"
-}).when("/checkMobileEnabled", {
-templateUrl: "views/test-list-resources.html",
-controller: "TestListResourcesController"
 }).otherwise({
 redirectTo: "/"
 }), t.options = {
@@ -1426,6 +1425,11 @@ return n(r);
 }, 1e3);
 } ]).run([ "IS_IOS", function(e) {
 e && $("body").addClass("ios");
+} ]).run([ "$rootScope", "APIService", function(e, t) {
+var n = t.availableKinds(), r = _.find(n, function(e) {
+return "MobileClient" === e.kind;
+});
+e.AEROGEAR_MOBILE_ENABLED = !_.isNull(r) && !_.isUndefined(r);
 } ]), hawtioPluginLoader.addModule("openshiftConsole"), angular.module("openshiftConsole").factory("BrowserStore", [ function() {
 var e = {
 local: window.localStorage,
