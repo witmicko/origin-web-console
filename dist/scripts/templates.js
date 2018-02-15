@@ -909,6 +909,18 @@ angular.module('openshiftConsoleTemplates', []).run(['$templateCache', function(
   );
 
 
+  $templateCache.put('views/aerogear_mobile_enabled.html',
+    "<div class=\"middle\">\n" +
+    "<div ng-if=\"AEROGEAR_MOBILE_ENABLED\">\n" +
+    "Mobile is Enabled\n" +
+    "</div>\n" +
+    "<div ng-if=\"!AEROGEAR_MOBILE_ENABLED\">\n" +
+    "Mobile is NOT Enabled\n" +
+    "</div>\n" +
+    "</div>"
+  );
+
+
   $templateCache.put('views/attach-pvc.html',
     "<div class=\"add-to-project middle surface-shaded\">\n" +
     "<div class=\"middle-content\">\n" +

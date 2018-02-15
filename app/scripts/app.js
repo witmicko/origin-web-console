@@ -61,6 +61,9 @@ angular
           return HomePagePreferenceServiceProvider.$get().getHomePagePath();
         }
       })
+      .when('/checkMobileEnabled', {
+        templateUrl: 'views/aerogear_mobile_enabled.html'
+      })
       .when('/catalog', landingPageRoute)
       .when('/create-project', {
         templateUrl: 'views/create-project.html',
@@ -631,6 +634,13 @@ angular
       // content (e.g. using :before pseudo-elements).
       $('body').addClass('ios');
     }
+  })
+  .run(function($rootScope, APIService) {
+    var resources = APIService.availableKinds();
+    var mobileClient = _.find(resources, function(resource) {
+      return resource.kind === "MobileClient";
+    });
+    $rootScope.AEROGEAR_MOBILE_ENABLED = !_.isNull(mobileClient) && !_.isUndefined(mobileClient);
   });
 
 hawtioPluginLoader.addModule('openshiftConsole');
