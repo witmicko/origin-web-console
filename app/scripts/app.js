@@ -631,6 +631,13 @@ angular
       // content (e.g. using :before pseudo-elements).
       $('body').addClass('ios');
     }
+  })
+  .run(function($rootScope, APIService) {
+    var resources = APIService.availableKinds();
+    var mobileClient = _.find(resources, function(resource) {
+      return resource.kind === "MobileClient";
+    });
+    $rootScope.AEROGEAR_MOBILE_ENABLED = !_.isNull(mobileClient) && !_.isUndefined(mobileClient);
   });
 
 hawtioPluginLoader.addModule('openshiftConsole');
