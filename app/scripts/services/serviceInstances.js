@@ -31,6 +31,7 @@ angular.module("openshiftConsole")
       return DataService.get(servicePlansVersion, servicePlanName, {});
     };
 
+
     // Checks if this plan is currently the one the instance references.
     var isCurrentPlan = function(serviceInstance, servicePlan) {
       var servicePlanName = getServicePlanNameForInstance(serviceInstance);

@@ -8,6 +8,7 @@
       'AuthorizationService',
       'BindingService',
       'ListRowUtils',
+      'MobileClientsService',
       'ServiceInstancesService',
       ServiceInstanceRow
     ],
@@ -15,16 +16,19 @@
     bindings: {
       apiObject: '<',
       state: '<',
-      bindings: '<'
+      bindings: '<',
+      mobileClients: '<'
     },
     templateUrl: 'views/overview/_service-instance-row.html'
   });
 
-  function ServiceInstanceRow($filter,
+  function ServiceInstanceRow(
+                              $filter,
                               APIService,
                               AuthorizationService,
                               BindingService,
                               ListRowUtils,
+                              MobileClientsService,
                               ServiceInstancesService) {
     var row = this;
     var isBindingFailed = $filter('isBindingFailed');
@@ -129,6 +133,11 @@
 
     row.deprovision = function() {
       ServiceInstancesService.deprovision(row.apiObject, row.deleteableBindings);
+    };
+
+    row.canAddMobileClient = function() {
+      return !!MobileClientsService.filterExcluded(_.get(row.apiObject, 'metadata.name'),
+                                                   row.mobileClients).length;
     };
   }
 })();

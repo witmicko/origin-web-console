@@ -5878,6 +5878,46 @@ angular.module('openshiftConsoleTemplates', []).run(['$templateCache', function(
   );
 
 
+  $templateCache.put('views/directives/add-mobile-client.html',
+    "<div class=\"panel panel-default\">\n" +
+    "<div class=\"panel-heading\">\n" +
+    "<h3 class=\"panel-title pull-left\">Select Mobile Client to add to this service</h3>\n" +
+    "<button class=\"panel-title btn pull-right\" type=\"button\" ng-click=\"ctrl.onClose()\">\n" +
+    "<span aria-hidden=\"true\" class=\"pficon pficon-close\"></span>\n" +
+    "</button>\n" +
+    "<div class=\"clearfix\"></div>\n" +
+    "</div>\n" +
+    "<div class=\"panel-body\">\n" +
+    "<div class=\"list-pf\">\n" +
+    "<div ng-repeat=\"client in ctrl.clientsWhereExcluded\">\n" +
+    "<div class=\"list-pf-item\">\n" +
+    "<div class=\"list-pf-container\" ng-click=\"ctrl.addMobileClient(client)\">\n" +
+    "<div class=\"order-service-details ng-scope\">\n" +
+    "<div class=\"order-service-details-top\">\n" +
+    "<div class=\"service-icon\">\n" +
+    "<span class=\"fa-4x {{client.metadata.annotations.icon}}\"></span>\n" +
+    "</div>\n" +
+    "<div class=\"service-title-area\">\n" +
+    "<div class=\"service-title ng-binding\">\n" +
+    "{{client.spec.name}}\n" +
+    "</div>\n" +
+    "<div class=\"order-service-tags ng-scope\">\n" +
+    "<span class=\"tag ng-binding ng-scope\">\n" +
+    "{{client.spec.clientType}}\n" +
+    "</span>\n" +
+    "</div>\n" +
+    "</div>\n" +
+    "</div>\n" +
+    "</div>\n" +
+    "</div>\n" +
+    "</div>\n" +
+    "</div>\n" +
+    "</div>\n" +
+    "</div>\n" +
+    "</div>"
+  );
+
+
   $templateCache.put('views/directives/annotations.html',
     "<p ng-if=\"annotations\" ng-class=\"{'mar-bottom-xl': !expandAnnotations}\">\n" +
     "<a href=\"\" ng-click=\"toggleAnnotations()\">{{expandAnnotations ? 'Hide Annotations' : 'Show Annotations'}}</a>\n" +
@@ -12094,7 +12134,7 @@ angular.module('openshiftConsoleTemplates', []).run(['$templateCache', function(
     "Provisioned Services\n" +
     "</h2>\n" +
     "<div class=\"list-pf\">\n" +
-    "<service-instance-row ng-repeat=\"serviceInstance in overview.filteredServiceInstances track by (serviceInstance | uid)\" api-object=\"serviceInstance\" bindings=\"overview.bindingsByInstanceRef[serviceInstance.metadata.name]\" state=\"overview.state\"></service-instance-row>\n" +
+    "<service-instance-row ng-repeat=\"serviceInstance in overview.filteredServiceInstances track by (serviceInstance | uid)\" api-object=\"serviceInstance\" bindings=\"overview.bindingsByInstanceRef[serviceInstance.metadata.name]\" state=\"overview.state\" mobile-clients=\"overview.mobileClients\"></service-instance-row>\n" +
     "</div>\n" +
     "</div>\n" +
     "</div>\n" +
@@ -12873,6 +12913,14 @@ angular.module('openshiftConsoleTemplates', []).run(['$templateCache', function(
     "</div>\n" +
     "<div class=\"list-pf-expansion collapse\" ng-if=\"row.expanded\" ng-class=\"{ in: row.expanded }\">\n" +
     "<div class=\"list-pf-container\">\n" +
+    "<div class=\"expanded-section no-margin\">\n" +
+    "<div class=\"row\">\n" +
+    "<div class=\"col-sm-2 col-sm-offset-10\" ng-if=\"row.canAddMobileClient()\">\n" +
+    "<button class=\"btn btn-default btn-lg pull-right\" ng-click=\"row.showOverlayPanel('addMobileClient', {target: row.apiObject})\">Add Client\n" +
+    "</button>\n" +
+    "</div>\n" +
+    "</div>\n" +
+    "</div>\n" +
     "<alerts alerts=\"row.notifications\"></alerts>\n" +
     "<div ng-switch=\"row.instanceStatus\">\n" +
     "<div ng-switch-when=\"deleted\" class=\"row\">\n" +
@@ -12940,6 +12988,9 @@ angular.module('openshiftConsoleTemplates', []).run(['$templateCache', function(
     "</div>\n" +
     "<div ng-if=\"row.overlay.panelName === 'unbindService'\">\n" +
     "<unbind-service target=\"row.overlay.state.target\" bindings=\"row.deleteableBindings\" applications-by-binding=\"row.state.applicationsByBinding\" on-close=\"row.closeOverlayPanel\" service-class=\"row.serviceClass\"></unbind-service>\n" +
+    "</div>\n" +
+    "<div ng-if=\"row.overlay.panelName === 'addMobileClient'\">\n" +
+    "<add-mobile-client service-name=\"row.apiObject.metadata.name\" project=\"row.state.project\" on-close=\"row.closeOverlayPanel\" mobile-clients=\"row.mobileClients\"></add-mobile-client>\n" +
     "</div>\n" +
     "</overlay-panel>"
   );
