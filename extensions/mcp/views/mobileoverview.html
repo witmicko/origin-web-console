@@ -1,0 +1,21 @@
+<project-header class="top-header"></project-header>
+<project-page class="overview">
+  
+  <div class="middle-section">
+    <div class="middle-container">
+
+      <div class="middle-content">
+
+        <div class="container-fluid">
+          <tasks></tasks>
+          <alerts alerts="overview.state.alerts"></alerts>
+        </div>
+
+        <mp-setup ng-if="mcpError"></mp-setup>
+        <mp-get-started ng-if="!mcpError && overviews.apps.objects.length === 0 && overviews.services.objects.length === 0" project-name=projectContext.projectName service-created=serviceCreated options=getStartedOptions></mp-get-started>
+        <mobile-overview ng-if="overviews.apps.objects.length > 0 || overviews.services.objects.length > 0" overviews=overviews object-selected=objectSelected action-selected=actionSelected></mobile-overview>
+
+      </div>
+    </div>
+  </div>
+</project-page>

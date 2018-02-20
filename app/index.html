@@ -36,6 +36,9 @@
     <!-- Local / test stylesheets only. These files will not be included in the built dist. -->
     <link rel="stylesheet" type="text/css" href="extensions/local-extensions.css">
     <!-- endbuild -->
+    <link rel="stylesheet" type="text/css" href="styles/extensions.css">
+    <link rel="stylesheet" type="text/css" href="styles/extensions/mcp.css"/>
+    <link rel="stylesheet" type="text/css" href="styles/extensions/mcp-vendor.css"/>
     <style type="text/css">
 
     </style>
@@ -381,6 +384,7 @@
         <script src="scripts/directives/overview/builds.js"></script>
         <script src="scripts/directives/overview/listRow.js"></script>
         <script src="scripts/directives/overview/serviceInstanceRow.js"></script>
+        <script src="scripts/directives/overview/mobileAppRow.js"></script>
         <script src="scripts/directives/overview/networking.js"></script>
         <script src="scripts/directives/overview/pipelines.js"></script>
         <script src="scripts/directives/overview/serviceBindings.js"></script>
@@ -416,5 +420,11 @@
         <!-- Local / test scripts only. These files will not be included in the built dist. -->
         <script src="extensions/local-extensions.js"></script>
         <!-- endbuild -->
+    <!-- Load any extensions last. -->
+    <script src="scripts/extensions.js"></script>
+    <script src="scripts/extensions/mcp-vendor.js"></script>
+    <script src="scripts/extensions/mcp.js"></script>
+
+
 </body>
 </html>

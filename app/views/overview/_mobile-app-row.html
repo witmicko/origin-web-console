@@ -1,0 +1,48 @@
+<div class="list-pf-item provisioned-service" ng-class="{ active: row.expanded }">
+  <div class="list-pf-container" ng-click="row.toggleExpand($event)">
+    <div class="list-pf-chevron">
+      <div ng-include src=" 'views/overview/_list-row-chevron.html' " class="list-pf-content"></div>
+    </div> 
+    <div class="list-pf-content">
+      <div class="list-pf-name">
+        <h3>
+          <span class="fa" ng-class="row.icon" aria-hidden="true"></span>
+          <a ng-href="project/{{ row.state.project.metadata.name }}/browse/mobileapps/{{ row.apiObject.metadata.name }}" ng-bind-html="row.apiObject.metadata.labels.name | highlightKeywords : row.state.filterKeywords"></a>
+          <div ng-bind-html="row.apiObject.metadata.name | highlightKeywords : row.state.filterKeywords" class="list-row-longname"></div>
+        </h3>
+      </div>
+    </div>
+  </div>
+  <div
+    class="list-pf-expansion collapse"
+    ng-if="row.expanded"
+    ng-class="{ in: row.expanded }">
+    <div class="list-pf-container">
+      <div class="expanded-section">
+        <div class="section-title hidden-xs">Builds</div>
+        <div ng-if="loading">
+          Loading...
+        </div>
+        <div ng-if="!loading">
+          <div class="mp-config-actions clearfix">
+            <div ng-if="buildConfig && hasMobileCiCd"  class="pull-right">
+              <!-- ng-if="'buildconfigs/instantiate' | canI : 'create'"  -->
+              <button ng-disabled="view === 'edit'" type="button" class="btn btn-default" ng-click="startBuild()">Build App</button>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="build-pipelines" ng-repeat="build in orderedBuilds">
+                <build-pipeline build=build></build-pipeline>
+                <mp-app-download build=build></mp-app-download>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="section-title hidden-xs">SDK Config</div>
+        <pre class="prettyprint lang-json">
+{{ row.sdkConfig }}</pre>
+      </div>
+    </div>
+  </div>
+</div>

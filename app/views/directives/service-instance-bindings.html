@@ -1,4 +1,4 @@
-<div ng-if="$ctrl.bindable || ($ctrl.bindings | size)">
+<div ng-if="$ctrl.bindable || ($ctrl.bindings | size) || $ctrl.isFHSyncServer">
   <h3 ng-if="$ctrl.showHeader">Bindings</h3>
   <service-binding
     ng-repeat="binding in $ctrl.bindings track by (binding | uid)"
@@ -13,7 +13,27 @@
       Create Binding
     </a>
   </p>
-  <p ng-if="!$ctrl.bindable && !($ctrl.bindings | size)">
+
+  <p ng-if="$ctrl.isFHSyncServer">
+    <!-- TODO: Remove hardcoding of service/secret names -->
+    <a href="" ng-if="$ctrl.mobileIntegrations['keycloak'] == false" ng-click="$ctrl.enableBindingFromKeycloakToFHSyncServer()" role="button">
+      <span class="pficon pficon-add-circle-o" aria-hidden="true"></span>
+      Enable Keycloak Integration
+    </a>
+    <a href="" ng-if="$ctrl.mobileIntegrations['keycloak']" ng-click="$ctrl.disableBindingFromKeycloakToFHSyncServer()" role="button">
+      <span class="pficon pficon-add-circle-o" aria-hidden="true"></span>
+      Disable Keycloak Integration
+    </a>
+    <a href="" ng-if="$ctrl.mobileIntegrations['mcp-mobile-keys'] == false" ng-click="$ctrl.enableBindingFromAPIKeysToFHSyncServer()" role="button">
+      <span class="pficon pficon-add-circle-o" aria-hidden="true"></span>
+      Enable API Keys Integration
+    </a>
+    <a href="" ng-if="$ctrl.mobileIntegrations['mcp-mobile-keys']" ng-click="$ctrl.disbleBindingFromAPIKeysToFHSyncServer()" role="button">
+      <span class="pficon pficon-add-circle-o" aria-hidden="true"></span>
+      Disable API Keys Integration
+    </a>
+  </p>
+  <p ng-if="!$ctrl.bindable && !($ctrl.bindings | size) && ($ctrl.isFHSyncServer == false)">
     <span>There are no service bindings.</span>
   </p>
 </div>

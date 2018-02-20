@@ -6,7 +6,7 @@
     <div class="list-pf-content">
       <div class="list-pf-name">
         <h3>
-          <a ng-href="{{row.apiObject | navigateResourceURL}}" ng-bind-html="row.displayName | highlightKeywords : row.state.filterKeywords"></a>
+          <a ng-href="project/{{ row.state.project.metadata.name }}/browse/mobileservices/{{ row.serviceClass.spec.externalMetadata.serviceName }}" ng-bind-html="row.displayName | highlightKeywords : row.state.filterKeywords"></a>
           <div ng-bind-html="row.apiObject.metadata.name | highlightKeywords : row.state.filterKeywords" class="list-row-longname"></div>
         </h3>
         <div class="status-icons" ng-if="!row.expanded" ng-init="tooltipID = 'instance-status-tooltip-' + $id">
@@ -156,6 +156,17 @@
               <a ng-if="row.serviceClass.spec.externalMetadata.documentationUrl" ng-href="{{row.serviceClass.spec.externalMetadata.documentationUrl}}" target="_blank" class="learn-more-link">View Documentation <i class="fa fa-external-link" aria-hidden="true"></i></a>
               <a ng-if="row.serviceClass.spec.externalMetadata.supportUrl" ng-href="{{row.serviceClass.spec.externalMetadata.supportUrl}}" target="_blank" class="learn-more-link">Get Support <i class="fa fa-external-link" aria-hidden="true"></i></a>
             </div>
+          <div ng-if="row.isBindable || (row.bindings | size) || row.isFHSyncServer">
+            <div class="section-title" ng-if="row.isFHSyncServer == false">Bindings</div>
+            <div class="section-title" ng-if="row.isFHSyncServer">Mobile Service Integrations</div>
+            <service-instance-bindings
+              is-overview="true"
+              project="row.state.project"
+              bindings="row.bindings"
+              service-instance="row.apiObject"
+              service-class="row.serviceClass"
+              service-plan="row.servicePlan">
+            </service-instance-bindings>
           </div>
         </div>
       </div>

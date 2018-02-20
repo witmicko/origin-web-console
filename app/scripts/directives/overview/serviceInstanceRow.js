@@ -69,6 +69,7 @@
       row.servicePlan = getServicePlan();
       row.displayName = serviceInstanceDisplayName(row.apiObject, row.serviceClass);
       row.isBindable = BindingService.isServiceBindable(row.apiObject, row.serviceClass, row.servicePlan);
+      row.isFHSyncServer = row.serviceClass.spec.externalMetadata.serviceName === 'fh-sync-server';
     };
 
     row.$onChanges = function(changes) {
