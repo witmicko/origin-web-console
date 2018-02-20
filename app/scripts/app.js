@@ -633,11 +633,8 @@ angular
     }
   })
   .run(function($rootScope, APIService) {
-    var resources = APIService.availableKinds();
-    var mobileClient = _.find(resources, function(resource) {
-      return resource.kind === "MobileClient";
-    });
-    $rootScope.AEROGEAR_MOBILE_ENABLED = !_.isNull(mobileClient) && !_.isUndefined(mobileClient);
+    $rootScope.AEROGEAR_MOBILE_ENABLED = !!APIService.apiInfo({ resource: "mobileclients", group: "mobile.k8s.io" });
+    Logger.info("AEROGEAR_MOBILE_ENABLED: " + $rootScope.AEROGEAR_MOBILE_ENABLED);
   });
 
 hawtioPluginLoader.addModule('openshiftConsole');
