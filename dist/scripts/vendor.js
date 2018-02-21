@@ -75118,7 +75118,6 @@ return c.promise;
 },
 canI: function(e, t, n) {
 if (l) return !0;
-if (!e) return !1;
 var i = r.toResourceGroupVersion(e), o = p(n || a);
 return !!o && (g(o, t, i.group, i.resource) || g(o, t, "*", "*") || g(o, t, i.group, "*") || g(o, t, "*", i.resource));
 },
@@ -75282,7 +75281,7 @@ t._websocketEventsMap = {};
 });
 }
 function p(e) {
-return e.length >= w && Date.now() - e[0].time < 3e4;
+return e.length >= y && Date.now() - e[0].time < 3e4;
 }
 function g(e) {
 if (e.length < 5) return !1;
@@ -75320,13 +75319,6 @@ i.$emit("NotificationsService.addNotification", e), m = [];
 maxWait: 1e3
 }), b = function(e, t) {
 t && (e += " (status " + t + ")"), m.push(e), v();
-}, y = function(e, t) {
-var n;
-return n = e ? "Unknown resource: " + e.toString() : "Internal error: API resource not specified.", _.get(t, "errorNotification", !0) && b(n), r.reject({
-data: {
-message: n
-}
-});
 };
 f.prototype.list = function(e, t, n, i) {
 e = a.toResourceGroupVersion(e);
@@ -75343,14 +75335,12 @@ c = {
 "Content-Type": "application/json"
 };
 return _.has(o, "gracePeriodSeconds") && (u.gracePeriodSeconds = o.gracePeriodSeconds), this._getNamespace(e, i, o).then(function(r) {
-var a = l._urlForResource(e, n, i, !1, r);
-if (!a) return y(e, o);
 t(angular.extend({
 method: "DELETE",
 auth: {},
 data: u,
 headers: c,
-url: a
+url: l._urlForResource(e, n, i, !1, r)
 }, o.http || {})).success(function(e, t, n, i, r) {
 s.resolve(e);
 }).error(function(e, t, n, i) {
@@ -75366,13 +75356,11 @@ config: i
 e = a.deriveTargetResource(e, i), s = s || {};
 var l = r.defer(), c = this;
 return this._getNamespace(e, o, s).then(function(r) {
-var a = c._urlForResource(e, n, o, !1, r);
-if (!a) return y(e, s);
 t(angular.extend({
 method: "PUT",
 auth: {},
 data: i,
-url: a
+url: c._urlForResource(e, n, o, !1, r)
 }, s.http || {})).success(function(e, t, n, i, r) {
 l.resolve(e);
 }).error(function(e, t, n, i) {
@@ -75388,13 +75376,11 @@ config: i
 e = a.deriveTargetResource(e, i), s = s || {};
 var l = r.defer(), c = this;
 return this._getNamespace(e, o, s).then(function(r) {
-var a = c._urlForResource(e, n, o, !1, r);
-if (!a) return y(e, s);
 t(angular.extend({
 method: "POST",
 auth: {},
 data: i,
-url: a
+url: c._urlForResource(e, n, o, !1, r)
 }, s.http || {})).success(function(e, t, n, i, r) {
 l.resolve(e);
 }).error(function(e, t, n, i) {
@@ -75465,12 +75451,10 @@ c.resolve(u.by("metadata.name")[n]);
 }, 0); else {
 var d = this;
 this._getNamespace(e, i, o).then(function(r) {
-var a = d._urlForResource(e, n, i, !1, r);
-if (!a) return y(e, o);
 t(angular.extend({
 method: "GET",
 auth: {},
-url: a
+url: d._urlForResource(e, n, i, !1, r)
 }, o.http || {})).success(function(t, n, i, r, o) {
 d._isImmutable(e) && (u ? u.update(t, "ADDED") : d._immutableData(s, [ t ])), c.resolve(t);
 }).error(function(t, i, r, a) {
@@ -75489,11 +75473,9 @@ var l = this;
 e = a.toResourceGroupVersion(e);
 var d, h = o ? "binary.k8s.io" : "base64.binary.k8s.io", f = {}, p = {}, g = {}, m = {}, v = function() {
 return l._getNamespace(e, i, {}).then(function(a) {
-var d = l._urlForResource(e, t, i, !0, _.extend(a, r));
-if (!d) return y(e, r);
-var v = 0;
+var d = 0;
 return n({
-url: d,
+url: l._urlForResource(e, t, i, !0, _.extend(a, r)),
 auth: {},
 onopen: function(e) {
 _.each(f, function(t) {
@@ -75503,8 +75485,8 @@ t(e);
 onmessage: function(e) {
 if (_.isString(e.data)) {
 var t;
-o || (t = c.decode(u.pad(e.data)), v += t.length), _.each(p, function(n) {
-o ? n(e.data) : n(t, e.data, v);
+o || (t = c.decode(u.pad(e.data)), d += t.length), _.each(p, function(n) {
+o ? n(e.data) : n(t, e.data, d);
 });
 } else s.log("log stream response is not a string", e.data);
 },
@@ -75590,7 +75572,7 @@ opts: i
 }, f.prototype.watchObject = function(e, t, n, i, r) {
 e = a.toResourceGroupVersion(e), r = r || {};
 var o, s = this._uniqueKey(e, t, n, r);
-if (s && i) {
+if (i) {
 this._watchObjectCallbacks(s).add(i);
 var l = this;
 o = function(e, n, i) {
@@ -75649,76 +75631,72 @@ this._watchPollTimeoutsMap[e] = t;
 if (!t) return this._watchWebsocketsMap[e];
 this._watchWebsocketsMap[e] = t;
 };
-var w = 10;
+var y = 10;
 f.prototype._addWebsocketEvent = function(e, t) {
 var n = this._websocketEventsMap[e];
 for (n || (n = this._websocketEventsMap[e] = []), n.push({
 type: t,
 time: Date.now()
-}); n.length > w; ) n.shift();
+}); n.length > y; ) n.shift();
 }, f.prototype._isTooManyWebsocketRetries = function(e) {
 var t = this._websocketEventsMap[e];
 return !!t && (p(t) ? (s.log("Too many websocket open or close events for resource/context in a short period", e, t), !0) : !!g(t) && (s.log("Too many consecutive websocket close events for resource/context", e, t), !0));
 };
-var x = function(e) {
+var w = function(e) {
 var t = _.keysIn(_.pick(e, [ "fieldSelector", "labelSelector" ])).sort();
 return _.reduce(t, function(n, i, r) {
 return n + i + "=" + encodeURIComponent(e[i]) + (r < t.length - 1 ? "&" : "");
 }, "?");
 };
 f.prototype._uniqueKey = function(e, t, n, i) {
-var r, o = n && n.namespace || _.get(n, "project.metadata.name") || n.projectName, a = _.get(i, "http.params"), s = this._urlForResource(e, t, n, null, angular.extend({}, {}, {
-namespace: o
-}));
-return r = s ? s.toString() : e || "<unknown>", r += x(a || {}), _.get(i, "partialObjectMetadataList") ? r + "#application/json;as=PartialObjectMetadataList;v=v1alpha1;g=meta.k8s.io" : r;
+var r = n && n.namespace || _.get(n, "project.metadata.name") || n.projectName, o = _.get(i, "http.params"), a = this._urlForResource(e, t, n, null, angular.extend({}, {}, {
+namespace: r
+})).toString() + w(o || {});
+return _.get(i, "partialObjectMetadataList") ? a + "#application/json;as=PartialObjectMetadataList;v=v1alpha1;g=meta.k8s.io" : a;
 }, f.prototype._startListOp = function(e, n, i) {
 i = i || {};
 var r = _.get(i, "http.params") || {}, o = this._uniqueKey(e, null, n, i);
 this._listInFlight(o, !0);
 var a = {};
 i.partialObjectMetadataList && (a.Accept = "application/json;as=PartialObjectMetadataList;v=v1alpha1;g=meta.k8s.io");
-var s, l = this;
-if (n.projectPromise && !e.equals("projects")) n.projectPromise.done(function(c) {
-if (!(s = l._urlForResource(e, null, n, !1, _.assign({}, r, {
-namespace: c.metadata.name
-})))) return y(e, i);
+var s = this;
+n.projectPromise && !e.equals("projects") ? n.projectPromise.done(function(l) {
 t(angular.extend({
 method: "GET",
 auth: {},
 headers: a,
-url: s
-}, i.http || {})).success(function(t, r, a, s, c) {
-l._listOpComplete(o, e, n, i, t);
+url: s._urlForResource(e, null, n, !1, _.assign({}, r, {
+namespace: l.metadata.name
+}))
+}, i.http || {})).success(function(t, r, a, l, c) {
+s._listOpComplete(o, e, n, i, t);
 }).error(function(t, n, r, a) {
-l._listInFlight(o, !1);
-var s = l._listDeferred(o);
-delete l._listDeferredMap[o], s.reject({
+s._listInFlight(o, !1);
+var l = s._listDeferred(o);
+delete s._listDeferredMap[o], l.reject({
 data: t,
 status: n,
 headers: r,
 config: a
 }), _.get(i, "errorNotification", !0) && b("Failed to list " + e, n);
 });
-}); else {
-if (!(s = this._urlForResource(e, null, n, !1, r))) return y(e, i);
-t({
+}) : t({
 method: "GET",
 auth: {},
 headers: a,
-url: s
-}).success(function(t, r, a, s, c) {
-l._listOpComplete(o, e, n, i, t);
+url: this._urlForResource(e, null, n, !1, r)
+}).success(function(t, r, a, l, c) {
+s._listOpComplete(o, e, n, i, t);
 }).error(function(t, n, r, a) {
-l._listInFlight(o, !1);
-var s = l._listDeferred(o);
-delete l._listDeferredMap[o], s.reject({
+s._listInFlight(o, !1);
+var l = s._listDeferred(o);
+delete s._listDeferredMap[o], l.reject({
 data: t,
 status: n,
 headers: r,
 config: a
 }), _.get(i, "errorNotification", !0) && b("Failed to list " + e, n);
 });
-}
 }, f.prototype._listOpComplete = function(e, t, n, i, r) {
 r.items || console.warn("List request for " + t + " returned a null items array.  This is an invalid API response.");
 var o = r.items || [];
@@ -75853,11 +75831,11 @@ return this._getAPIServerVersion("/version/openshift");
 }, f.prototype.createData = function(e) {
 return new d(e);
 };
-var C = {
+var x = {
 imagestreamimages: !0
 };
 return f.prototype._isImmutable = function(e) {
-return !!C[e.resource];
+return !!x[e.resource];
 }, f.prototype._hasImmutable = function(e, t, n) {
 return this._isImmutable(e) && t && t.by("metadata.name")[n];
 }, f.prototype._getNamespace = function(e, t, n) {
