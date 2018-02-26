@@ -7,10 +7,10 @@
       <div class="list-pf-name">
         <h3>
           <span class="fa-2x {{row.apiObject.metadata.annotations.icon}}"></span>
-          <a ng-href="{{row.apiObject | navigateResourceURL}}">{{row.apiObject.spec.name}}</a>
-          <div ng-bind-html="row.apiObject.spec.clientType | highlightKeywords : row.state.filterKeyword" class="list-row-longname"></div>
+          <a ng-href="{{row.apiObject | navigateResourceURL}}"><span ng-bind-html="row.apiObject.metadata.name | highlightKeywords : row.state.filterKeywords"></span></a>
+          <div class="list-row-longname"><span>{{row.apiObject.spec.clientType}}</span></div>
 
-          <div ng-bind-html="row.bundleDisplay | highlightKeywords : row.state.filterKeyword" class="list-row-longname"></div>
+          <div class="list-row-longname">{{row.bundleDisplay}}</div>
         </h3>
       </div>
     </div>
@@ -27,8 +27,7 @@
               group="mobile.k8s.io"
               stay-on-current-page="true"
               resource-name="{{row.apiObject.metadata.name}}"
-              project-name="{{row.projectName}}"
-              alerts="alerts">
+              project-name="{{row.projectName}}">
             </delete-link>
           </li>
         </ul>

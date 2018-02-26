@@ -12611,9 +12611,9 @@ angular.module('openshiftConsoleTemplates', []).run(['$templateCache', function(
     "<div class=\"list-pf-name\">\n" +
     "<h3>\n" +
     "<span class=\"fa-2x {{row.apiObject.metadata.annotations.icon}}\"></span>\n" +
-    "<a ng-href=\"{{row.apiObject | navigateResourceURL}}\">{{row.apiObject.spec.name}}</a>\n" +
-    "<div ng-bind-html=\"row.apiObject.spec.clientType | highlightKeywords : row.state.filterKeyword\" class=\"list-row-longname\"></div>\n" +
-    "<div ng-bind-html=\"row.bundleDisplay | highlightKeywords : row.state.filterKeyword\" class=\"list-row-longname\"></div>\n" +
+    "<a ng-href=\"{{row.apiObject | navigateResourceURL}}\"><span ng-bind-html=\"row.apiObject.metadata.name | highlightKeywords : row.state.filterKeywords\"></span></a>\n" +
+    "<div class=\"list-row-longname\"><span>{{row.apiObject.spec.clientType}}</span></div>\n" +
+    "<div class=\"list-row-longname\">{{row.bundleDisplay}}</div>\n" +
     "</h3>\n" +
     "</div>\n" +
     "</div>\n" +
@@ -12625,7 +12625,7 @@ angular.module('openshiftConsoleTemplates', []).run(['$templateCache', function(
     "</button>\n" +
     "<ul class=\"dropdown-menu dropdown-menu-right\" uib-dropdown-menu role=\"menu\">\n" +
     "<li ng-if=\"row.mobileclientVersion | canI : 'delete'\">\n" +
-    "<delete-link kind=\"MobileClient\" group=\"mobile.k8s.io\" stay-on-current-page=\"true\" resource-name=\"{{row.apiObject.metadata.name}}\" project-name=\"{{row.projectName}}\" alerts=\"alerts\">\n" +
+    "<delete-link kind=\"MobileClient\" group=\"mobile.k8s.io\" stay-on-current-page=\"true\" resource-name=\"{{row.apiObject.metadata.name}}\" project-name=\"{{row.projectName}}\">\n" +
     "</delete-link>\n" +
     "</li>\n" +
     "</ul>\n" +

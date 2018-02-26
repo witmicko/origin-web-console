@@ -17,8 +17,7 @@
     controllerAs: 'row',
     bindings: {
       apiObject: '<',
-      state: '<',
-      bindings: '<'
+      state: '<'
     },
     templateUrl: 'views/overview/_mobile-client-row.html'
   });
@@ -31,7 +30,7 @@
 
     row.$onChanges = function(changes) {
       if (changes.apiObject) {
-        row.bundleDisplay = "bundle id: " + row.apiObject.spec.appIdentifier;
+        row.bundleDisplay = "bundle-id: " + row.apiObject.spec.appIdentifier;
         switch (row.apiObject.spec.clientType) {
           case 'android':
             row.installType = 'gradle';
