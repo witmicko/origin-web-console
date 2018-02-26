@@ -455,16 +455,49 @@
       }
     }
     .mobile-clients {
-      height: 30px;
-      margin-bottom: 1em;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      a {
-        padding-left: 1em;
-        vertical-align: top;
+      .client-title {
+        color: #757575;
+      }
+
+      .mobile-client {
+        height: 60px;
+        margin-bottom: 1em;
+        overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
+
+        .client-icon {
+         vertical-align: bottom;
+         line-height: 42px;
+        }
+
+        .client-details {
+          display: inline-block;
+
+          .client-type {
+            padding-left: 10px;
+            color: #757575;
+            font-size: 11px;
+            line-height: 11px;
+          }
+        }
+
+        a {
+          padding-left: 1em;
+          vertical-align: middle;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+
+        .exclude {
+          color: @link-color;
+          line-height: 12px;
+          cursor: pointer;
+          padding-top: 5px;
+          .pficon-error-circle-o:before {
+            color: @link-color;
+          }
+        }
       }
     }
   }
