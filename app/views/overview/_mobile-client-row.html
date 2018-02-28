@@ -7,7 +7,7 @@
       <div class="list-pf-name">
         <h3>
           <span class="fa-2x {{row.apiObject.metadata.annotations.icon}}"></span>
-          <a ng-href="{{row.apiObject | navigateResourceURL}}"><span ng-bind-html="row.apiObject.metadata.name | highlightKeywords : row.state.filterKeywords"></span></a>
+          <a ng-href="{{row.apiObject | navigateResourceURL}}"><span ng-bind-html="row.apiObject.spec.name | highlightKeywords : row.state.filterKeywords"></span></a>
           <div class="list-row-longname"><span>{{row.apiObject.spec.clientType}}</span></div>
 
           <div class="list-row-longname">{{row.bundleDisplay}}</div>
