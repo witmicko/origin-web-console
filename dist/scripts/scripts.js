@@ -13854,9 +13854,9 @@ angular.module("openshiftConsole").component("mobileClientRow", {
 controller: [ "$scope", "$filter", "$routeParams", "APIService", "AuthorizationService", "DataService", "ListRowUtils", "Navigate", "ProjectsService", function(e, t, n, r, a, o, i, s, c) {
 var l = this;
 l.installType = "", _.extend(l, i.ui), l.$onChanges = function(e) {
-if (e.apiObject) switch (l.bundleDisplay = "bundle-id: " + l.apiObject.spec.appIdentifier, l.apiObject.spec.clientType) {
+if (e.apiObject) switch (l.bundleDisplay = l.apiObject.spec.appIdentifier, l.clientType = l.apiObject.spec.clientType.toUpperCase(), l.apiObject.spec.clientType) {
 case "android":
-l.installType = "gradle", l.bundleDisplay = "package name: " + l.apiObject.spec.appIdentifier;
+l.installType = "gradle";
 break;
 
 case "iOS":

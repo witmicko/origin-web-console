@@ -12610,9 +12610,9 @@ angular.module('openshiftConsoleTemplates', []).run(['$templateCache', function(
     "<div class=\"list-pf-content\">\n" +
     "<div class=\"list-pf-name\">\n" +
     "<h3>\n" +
-    "<span class=\"fa-2x {{row.apiObject.metadata.annotations.icon}}\"></span>\n" +
-    "<a ng-href=\"{{row.apiObject | navigateResourceURL}}\"><span ng-bind-html=\"row.apiObject.metadata.name | highlightKeywords : row.state.filterKeywords\"></span></a>\n" +
-    "<div class=\"list-row-longname\"><span>{{row.apiObject.spec.clientType}}</span></div>\n" +
+    "<div class=\"list-row-longname\"><span>{{row.clientType}}</span></div>\n" +
+    "\n" +
+    "<a ng-href=\"{{row.apiObject | navigateResourceURL}}\"><span ng-bind-html=\"row.apiObject.spec.name | highlightKeywords : row.state.filterKeywords\"></span></a>\n" +
     "<div class=\"list-row-longname\">{{row.bundleDisplay}}</div>\n" +
     "</h3>\n" +
     "</div>\n" +

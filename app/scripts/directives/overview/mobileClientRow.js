@@ -30,11 +30,11 @@
 
     row.$onChanges = function(changes) {
       if (changes.apiObject) {
-        row.bundleDisplay = "bundle-id: " + row.apiObject.spec.appIdentifier;
+        row.bundleDisplay = row.apiObject.spec.appIdentifier;
+        row.clientType = row.apiObject.spec.clientType.toUpperCase();
         switch (row.apiObject.spec.clientType) {
           case 'android':
             row.installType = 'gradle';
-            row.bundleDisplay = "package name: " + row.apiObject.spec.appIdentifier;
             break;
           case 'iOS':
             row.installType = 'cocoapods';
