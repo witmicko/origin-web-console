@@ -95,16 +95,6 @@
     ng-if="row.expanded"
     ng-class="{ in: row.expanded }">
     <div class="list-pf-container">
-      <div class="expanded-section no-margin">
-        <div class="row">
-          <div class="col-sm-2 col-sm-offset-10">
-            <button ng-disabled="row.canAddMobileClient()" class="btn btn-default btn-lg pull-right"
-                    ng-click="row.showOverlayPanel('addMobileClient', {target: row.apiObject})">Add Client
-            </button>
-          </div>
-        </div>
-      </div>
-
       <alerts alerts="row.notifications"></alerts>
       <div ng-switch="row.instanceStatus">
         <div ng-switch-when="deleted" class="row">
@@ -164,22 +154,10 @@
               </truncate-long-text></p>
           </div>
         </div>
-        <div ng-if="row.isMobileService && row.instanceStatus === 'ready'" class="row mobile-clients">
-          <div class="col-sm-6">
-            <div ng-if="row.filteredClients.length" class="client-title">Mobile Clients</div>
-            <div ng-repeat="mobileClient in row.filteredClients" class="col-sm-12 col-md-6 mobile-client">
-              <span class="fa-2x {{mobileClient.metadata.annotations.icon}} client-icon"></span>
-              <div class="client-details">
-                <a ng-href="{{mobileClient | navigateResourceURL}}">{{mobileClient.spec.name}}</a>
-                <div class="client-type">{{mobileClient.spec.appIdentifier}}</div>
-              </div>
-              <div class="exclude" ng-click="row.excludeClient(mobileClient)">
-                <span ng-click="row.excludeClient(mobileClient)" class="pficon-error-circle-o"></span>
-                <span>Exclude Client</span>
-              </div>
-            </div>
-          </div>
-        </div>
+        <mobile-service-clients ng-if="row.isMobileService && row.instanceStatus === 'ready'"
+        mobile-clients="row.mobileClients"
+        service-instance="row.apiObject"
+        project="row.state.project"></mobile-service-clients>
         <div class="row">
           <div class="col-sm-12">
             <div ng-if="row.serviceClass.spec.externalMetadata.documentationUrl || row.serviceClass.spec.externalMetadata.supportUrl">
@@ -205,7 +183,6 @@
     </div>
   </div>
 </div>
-
 <overlay-panel show-panel="row.overlay.panelVisible" handle-close="row.closeOverlayPanel">
   <div ng-if="row.overlay.panelName === 'bindService'">
     <bind-service target="row.overlay.state.target"
@@ -219,15 +196,5 @@
       applications-by-binding="row.state.applicationsByBinding"
       on-close="row.closeOverlayPanel"
       service-class="row.serviceClass"></unbind-service>
-  </div>
-
-
-  <div ng-if="row.overlay.panelName === 'addMobileClient'">
-    <add-mobile-client
-      service-name="row.apiObject.metadata.name"
-      project="row.state.project"
-      on-close="row.closeOverlayPanel"
-      mobile-clients="row.mobileClients"
-    ></add-mobile-client>
   </div>
 </overlay-panel>

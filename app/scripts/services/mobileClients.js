@@ -28,6 +28,13 @@ angular.module("openshiftConsole")
       });
     };
 
+    var filterNotExcluded = function(mobileClients, apiObject) {
+      var serviceId = _.get(apiObject, 'metadata.name', '');
+      return _.filter(mobileClients, function(client) {
+        var excludedServices = _.get(client, 'spec.excludedServices', []);
+        return !_.includes(excludedServices, serviceId);
+      });
+    };
 
     var removeFromExcluded = function(mobileClient, serviceName, context) {
       _.remove(mobileClient.spec.excludedServices, function(service) {
@@ -36,12 +43,20 @@ angular.module("openshiftConsole")
       return DataService.update(mobileclientVersion, mobileClient.metadata.name, mobileClient, context);
     };
 
+    var excludeClient = function(mobileClient, serviceInstance, context) {
+      var excludedServices = _.get(mobileClient, 'spec.excludedServices') || [];
+      excludedServices.push(_.get(serviceInstance, 'metadata.name'));
+      _.set(mobileClient, 'spec.excludedServices', excludedServices);
+      return DataService.update(mobileclientVersion, mobileClient.metadata.name, mobileClient, context)
+    };
 
     return {
       watch: watch,
       filterExcluded: filterExcluded,
+      filterNotExcluded: filterNotExcluded,
       getMobileClients: getMobileClients,
-      removeFromExcluded: removeFromExcluded
+      removeFromExcluded: removeFromExcluded,
+      excludeClient: excludeClient
     };
   });
 

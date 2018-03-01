@@ -378,7 +378,6 @@
                 <service-instance-row
                   ng-repeat="serviceInstance in overview.filteredServiceInstances track by (serviceInstance | uid)"
                   api-object="serviceInstance"
-                  mobile-clients="overview.filteredMobileClients"
                   bindings="overview.bindingsByInstanceRef[serviceInstance.metadata.name]"
                   state="overview.state"
                   mobile-clients="overview.mobileClients"></service-instance-row>

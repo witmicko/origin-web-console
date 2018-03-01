@@ -208,7 +208,6 @@ function OverviewController($scope,
            _.size(overview.monopods) +
            _.size(overview.state.serviceInstances) +
            _.size(overview.mobileClients);
-
   };
 
   // The size of all visible top-level items after filtering.
@@ -1476,6 +1475,4 @@ function OverviewController($scope,
       Navigate.toProjectList();
     }
   });
-
-
 }

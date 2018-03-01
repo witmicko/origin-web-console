@@ -7,10 +7,7 @@
       'APIService',
       'AuthorizationService',
       'BindingService',
-      'DataService',
       'ListRowUtils',
-      'MobileClientsService',
-      'NotificationsService',
       'ServiceInstancesService',
       ServiceInstanceRow
     ],
@@ -28,10 +25,7 @@
                               APIService,
                               AuthorizationService,
                               BindingService,
-                              DataService,
                               ListRowUtils,
-                              MobileClientsService,
-                              NotificationsService,
                               ServiceInstancesService) {
     var row = this;
     var isBindingFailed = $filter('isBindingFailed');
@@ -69,40 +63,6 @@
       }
     };
 
-    var filterExcluded = function(mobileClients, apiObject) {
-      var serviceId = _.get(apiObject, 'metadata.name', '');
-      return _.filter(mobileClients, function(client) {
-        var excludedServices = _.get(client, 'spec.excludedServices', []);
-        return !_.includes(excludedServices, serviceId);
-      });
-    };
-
-    var mobileclientVersion = {
-      group: "mobile.k8s.io",
-      version: "v1alpha1",
-      resource: "mobileclients"
-    };
-
-    row.excludeClient = function(mobileClient) {
-      var excludedServices = _.get(mobileClient, 'spec.excludedServices') || [];
-      excludedServices.push(_.get(row.apiObject, 'metadata.name'));
-      _.set(mobileClient, 'spec.excludedServices', excludedServices);
-      var context = {namespace: _.get(row, 'state.project.metadata.name')};
-      DataService.update(mobileclientVersion, mobileClient.metadata.name, mobileClient, context)
-      .then(function() {
-          NotificationsService.addNotification({
-            type: 'success',
-            message: 'Mobile client ' + _.get(mobileClient, 'spec.name') + ' excluded from ' + _.get(row.apiObject, 'metadata.name')
-          });
-        }).catch(function(err) {
-          NotificationsService.addNotification({
-            type: 'error',
-            message: 'Failed to exclude mobile client ' + _.get(mobileClient, 'spec.name'),
-            details: error.data.message
-          });
-        });
-    };
-
     row.$doCheck = function() {
       updateInstanceStatus();
 
@@ -111,19 +71,11 @@
       row.servicePlan = getServicePlan();
       row.displayName = serviceInstanceDisplayName(row.apiObject, row.serviceClass);
       row.isBindable = BindingService.isServiceBindable(row.apiObject, row.serviceClass, row.servicePlan);
-      if (row.isMobileService && row.mobileClients) {
-        row.filteredClients = filterExcluded(row.mobileClients, row.apiObject);
-      }
     };
 
     row.$onChanges = function(changes) {
       if (changes.bindings) {
         row.deleteableBindings = _.reject(row.bindings, 'metadata.deletionTimestamp');
-      }
-
-      if (row.isMobileService && changes.mobileClients) {
-        var clientChanges = _.get(changes, 'mobileClients.currentValue', {})
-        row.filteredClients = filterExcluded(clientChanges, row.apiObject);
       }
     };
 
@@ -179,11 +131,6 @@
 
     row.deprovision = function() {
       ServiceInstancesService.deprovision(row.apiObject, row.deleteableBindings);
-    };
-
-    row.canAddMobileClient = function() {
-      return !MobileClientsService.filterExcluded(_.get(row.apiObject, 'metadata.name'),
-                                                   row.mobileClients).length;
     };
   }
 })();

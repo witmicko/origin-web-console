@@ -3,7 +3,6 @@
 (function() {
   angular.module('openshiftConsole').component('addMobileClient', {
     controller: [
-      'DataService',
       'NotificationsService',
       'MobileClientsService',
       AddMobileClient
@@ -19,7 +18,6 @@
   });
 
   function AddMobileClient(
-                       DataService,
                        NotificationsService,
                        MobileClientsService) {
     var ctrl = this;
