@@ -97,8 +97,8 @@
     <div class="list-pf-container">
       <div class="expanded-section no-margin">
         <div class="row">
-          <div class="col-sm-2 col-sm-offset-10" ng-if="row.canAddMobileClient()">
-            <button class="btn btn-default btn-lg pull-right"
+          <div class="col-sm-2 col-sm-offset-10">
+            <button ng-disabled="row.canAddMobileClient()" class="btn btn-default btn-lg pull-right"
                     ng-click="row.showOverlayPanel('addMobileClient', {target: row.apiObject})">Add Client
             </button>
           </div>

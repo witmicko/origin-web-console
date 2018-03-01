@@ -31,7 +31,7 @@
                               DataService,
                               ListRowUtils,
                               MobileClientsService,
-                              NotificationsService
+                              NotificationsService,
                               ServiceInstancesService) {
     var row = this;
     var isBindingFailed = $filter('isBindingFailed');
@@ -182,7 +182,7 @@
     };
 
     row.canAddMobileClient = function() {
-      return !!MobileClientsService.filterExcluded(_.get(row.apiObject, 'metadata.name'),
+      return !MobileClientsService.filterExcluded(_.get(row.apiObject, 'metadata.name'),
                                                    row.mobileClients).length;
     };
   }
