@@ -2898,6 +2898,13 @@ return _.filter(t, function(t) {
 return _.includes(t.spec.excludedServices, e);
 });
 },
+filterNotExcluded: function(e, t) {
+var n = _.get(t, "metadata.name", "");
+return _.filter(e, function(e) {
+var t = _.get(e, "spec.excludedServices", []);
+return !_.includes(t, n);
+});
+},
 getMobileClients: function(n) {
 return e.list(t, {
 namespace: n
@@ -2909,6 +2916,10 @@ removeFromExcluded: function(n, r, a) {
 return _.remove(n.spec.excludedServices, function(e) {
 return e === r;
 }), e.update(t, n.metadata.name, n, a);
+},
+excludeClient: function(n, r, a) {
+var o = _.get(n, "spec.excludedServices") || [];
+return o.push(_.get(r, "metadata.name")), _.set(n, "spec.excludedServices", o), e.update(t, n.metadata.name, n, a);
 }
 };
 } ]), angular.module("openshiftConsole").factory("StorageService", [ "$filter", "APIService", "DataService", "NotificationsService", function(e, t, n, r) {
@@ -13224,25 +13235,25 @@ templateUrl: "views/directives/route-service-bar-chart.html"
 });
 }(), function() {
 angular.module("openshiftConsole").component("addMobileClient", {
-controller: [ "DataService", "NotificationsService", "MobileClientsService", function(e, t, n) {
-var r = this;
-r.context = {
-namespace: r.project.metadata.name
-}, r.$onInit = function() {
-r.clientsWhereExcluded = n.filterExcluded(r.serviceName, r.mobileClients);
-}, r.addMobileClient = function(e) {
-n.removeFromExcluded(e, r.serviceName, r.context).then(function() {
-t.addNotification({
+controller: [ "NotificationsService", "MobileClientsService", function(e, t) {
+var n = this;
+n.context = {
+namespace: n.project.metadata.name
+}, n.$onInit = function() {
+n.clientsWhereExcluded = t.filterExcluded(n.serviceName, n.mobileClients);
+}, n.addMobileClient = function(r) {
+t.removeFromExcluded(r, n.serviceName, n.context).then(function() {
+e.addNotification({
 type: "success",
-message: "Successfully added " + e.metadata.name + " client."
+message: "Successfully added " + r.metadata.name + " client."
 });
-}).catch(function(e) {
-t.addNotification({
+}).catch(function(t) {
+e.addNotification({
 type: "error",
 message: "Failed to add mobile client",
-details: e.data.message
+details: t.data.message
 });
-}), r.onClose();
+}), n.onClose();
 };
 } ],
 controllerAs: "ctrl",
@@ -13253,6 +13264,42 @@ serviceName: "<",
 mobileClients: "<"
 },
 templateUrl: "views/directives/add-mobile-client.html"
+});
+}(), function() {
+angular.module("openshiftConsole").component("mobileServiceClients", {
+controller: [ "NotificationsService", "MobileClientsService", function(e, t) {
+var n = this;
+n.$doCheck = function() {
+n.filteredClients = t.filterNotExcluded(n.mobileClients, n.serviceInstance);
+}, n.excludeClient = function(r) {
+t.excludeClient(r, n.serviceInstance, {
+namespace: _.get(n, "project.metadata.name")
+}).then(function() {
+e.addNotification({
+type: "success",
+message: "Mobile client " + _.get(r, "spec.name") + " excluded from " + _.get(n.serviceInstance, "metadata.name")
+});
+}).catch(function(t) {
+e.addNotification({
+type: "error",
+message: "Failed to exclude mobile client " + _.get(r, "spec.name"),
+details: t.data.message
+});
+});
+}, n.closeOverlayPanel = function() {
+_.set(n, "overlay.panelVisible", !1);
+}, n.showOverlayPanel = function(e, t) {
+_.set(n, "overlay.panelVisible", !0), _.set(n, "overlay.panelName", e), _.set(n, "overlay.state", t);
+}, n.canAddMobileClient = function() {
+return !t.filterExcluded(_.get(n.serviceInstance, "metadata.name"), n.mobileClients).length;
+};
+} ],
+bindings: {
+project: "<",
+serviceInstance: "<",
+mobileClients: "<"
+},
+templateUrl: "views/directives/mobile-service-clients.html"
 });
 }(), function() {
 angular.module("openshiftConsole").component("bindService", {
@@ -14270,41 +14317,39 @@ templateUrl: "views/overview/_list-row.html"
 });
 }(), function() {
 angular.module("openshiftConsole").component("serviceInstanceRow", {
-controller: [ "$filter", "APIService", "AuthorizationService", "BindingService", "ListRowUtils", "MobileClientsService", "ServiceInstancesService", function(e, t, n, r, a, o, i) {
-var s = this, c = e("isBindingFailed"), l = e("isBindingReady"), u = e("serviceInstanceFailedMessage"), d = e("truncate");
-_.extend(s, a.ui);
-var m = e("serviceInstanceDisplayName");
-s.serviceBindingsVersion = t.getPreferredVersion("servicebindings"), s.serviceInstancesVersion = t.getPreferredVersion("serviceinstances");
-var p = function() {
-var e = i.getServiceClassNameForInstance(s.apiObject);
-return _.get(s, [ "state", "serviceClasses", e ]);
+controller: [ "$filter", "APIService", "AuthorizationService", "BindingService", "ListRowUtils", "ServiceInstancesService", function(e, t, n, r, a, o) {
+var i = this, s = e("isBindingFailed"), c = e("isBindingReady"), l = e("serviceInstanceFailedMessage"), u = e("truncate");
+_.extend(i, a.ui);
+var d = e("serviceInstanceDisplayName");
+i.serviceBindingsVersion = t.getPreferredVersion("servicebindings"), i.serviceInstancesVersion = t.getPreferredVersion("serviceinstances"), i.isMobileService = "enabled" === _.get(i.apiObject, "metadata.labels", {}).mobile;
+var m = function() {
+var e = o.getServiceClassNameForInstance(i.apiObject);
+return _.get(i, [ "state", "serviceClasses", e ]);
+}, p = function() {
+var e = o.getServicePlanNameForInstance(i.apiObject);
+return _.get(i, [ "state", "servicePlans", e ]);
 }, f = function() {
-var e = i.getServicePlanNameForInstance(s.apiObject);
-return _.get(s, [ "state", "servicePlans", e ]);
-}, g = function() {
-_.get(s.apiObject, "metadata.deletionTimestamp") ? s.instanceStatus = "deleted" : c(s.apiObject) ? s.instanceStatus = "failed" : l(s.apiObject) ? s.instanceStatus = "ready" : s.instanceStatus = "pending";
+_.get(i.apiObject, "metadata.deletionTimestamp") ? i.instanceStatus = "deleted" : s(i.apiObject) ? i.instanceStatus = "failed" : c(i.apiObject) ? i.instanceStatus = "ready" : i.instanceStatus = "pending";
 };
-s.$doCheck = function() {
-g(), s.notifications = a.getNotifications(s.apiObject, s.state), s.serviceClass = p(), s.servicePlan = f(), s.displayName = m(s.apiObject, s.serviceClass), s.isBindable = r.isServiceBindable(s.apiObject, s.serviceClass, s.servicePlan);
-}, s.$onChanges = function(e) {
-e.bindings && (s.deleteableBindings = _.reject(s.bindings, "metadata.deletionTimestamp"));
-}, s.getSecretForBinding = function(e) {
-return e && _.get(s, [ "state", "secrets", e.spec.secretName ]);
-}, s.actionsDropdownVisible = function() {
-return !(_.get(s.apiObject, "metadata.deletionTimestamp") || (!s.isBindable || !n.canI(s.serviceBindingsVersion, "create")) && (_.isEmpty(s.deleteableBindings) || !n.canI(s.serviceBindingsVersion, "delete")) && !n.canI(s.serviceInstancesVersion, "delete"));
-}, s.closeOverlayPanel = function() {
-_.set(s, "overlay.panelVisible", !1);
-}, s.showOverlayPanel = function(e, t) {
-_.set(s, "overlay.panelVisible", !0), _.set(s, "overlay.panelName", e), _.set(s, "overlay.state", t);
-}, s.getFailedTooltipText = function() {
-var e = u(s.apiObject);
+i.$doCheck = function() {
+f(), i.notifications = a.getNotifications(i.apiObject, i.state), i.serviceClass = m(), i.servicePlan = p(), i.displayName = d(i.apiObject, i.serviceClass), i.isBindable = r.isServiceBindable(i.apiObject, i.serviceClass, i.servicePlan);
+}, i.$onChanges = function(e) {
+e.bindings && (i.deleteableBindings = _.reject(i.bindings, "metadata.deletionTimestamp"));
+}, i.getSecretForBinding = function(e) {
+return e && _.get(i, [ "state", "secrets", e.spec.secretName ]);
+}, i.actionsDropdownVisible = function() {
+return !(_.get(i.apiObject, "metadata.deletionTimestamp") || (!i.isBindable || !n.canI(i.serviceBindingsVersion, "create")) && (_.isEmpty(i.deleteableBindings) || !n.canI(i.serviceBindingsVersion, "delete")) && !n.canI(i.serviceInstancesVersion, "delete"));
+}, i.closeOverlayPanel = function() {
+_.set(i, "overlay.panelVisible", !1);
+}, i.showOverlayPanel = function(e, t) {
+_.set(i, "overlay.panelVisible", !0), _.set(i, "overlay.panelName", e), _.set(i, "overlay.state", t);
+}, i.getFailedTooltipText = function() {
+var e = l(i.apiObject);
 if (!e) return "";
-var t = d(e, 128);
+var t = u(e, 128);
 return e.length !== t.length && (t += "..."), t;
-}, s.deprovision = function() {
-i.deprovision(s.apiObject, s.deleteableBindings);
-}, s.canAddMobileClient = function() {
-return !!o.filterExcluded(_.get(s.apiObject, "metadata.name"), s.mobileClients).length;
+}, i.deprovision = function() {
+o.deprovision(i.apiObject, i.deleteableBindings);
 };
 } ],
 controllerAs: "row",

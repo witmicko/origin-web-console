@@ -31,7 +31,7 @@
             type: 'success',
             message: 'Mobile client ' + _.get(mobileClient, 'spec.name') + ' excluded from ' + _.get(ctrl.serviceInstance, 'metadata.name')
           });
-        }).catch(function(err) {
+        }).catch(function(error) {
           NotificationsService.addNotification({
             type: 'error',
             message: 'Failed to exclude mobile client ' + _.get(mobileClient, 'spec.name'),

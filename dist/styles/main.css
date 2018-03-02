@@ -5353,6 +5353,14 @@ h2+.list-view-pf{margin-top:20px}
 @media (min-width:768px){.overview .provisioned-service .list-pf-details{justify-content:space-between}
 .overview .provisioned-service .list-pf-expansion .learn-more-link{display:inline;margin-right:10px}
 }
+.overview .provisioned-service .mobile-clients .client-title{border-bottom:none}
+.overview .provisioned-service .mobile-clients .mobile-client{height:60px;margin-bottom:1em;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.overview .provisioned-service .mobile-clients .mobile-client .client-icon{vertical-align:bottom;line-height:42px}
+.overview .provisioned-service .mobile-clients .mobile-client .client-details{display:inline-block}
+.overview .provisioned-service .mobile-clients .mobile-client .client-details .client-type{padding-left:10px;color:#757575;font-size:11px;line-height:11px}
+.overview .provisioned-service .mobile-clients .mobile-client a{padding-left:10px;vertical-align:middle;white-space:nowrap;text-overflow:ellipsis}
+.overview .provisioned-service .mobile-clients .mobile-client .exclude{color:#0088ce;line-height:12px;cursor:pointer;padding-top:5px}
+.overview .provisioned-service .mobile-clients .mobile-client .exclude .pficon-error-circle-o:before{color:#0088ce}
 @media (min-width:992px){.overview .status-icons{margin-right:15px;width:40%}
 }
 .overview :not(.tab-pane)>overview-pipelines>.expanded-section{margin-bottom:30px}

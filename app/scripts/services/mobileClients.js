@@ -47,7 +47,7 @@ angular.module("openshiftConsole")
       var excludedServices = _.get(mobileClient, 'spec.excludedServices') || [];
       excludedServices.push(_.get(serviceInstance, 'metadata.name'));
       _.set(mobileClient, 'spec.excludedServices', excludedServices);
-      return DataService.update(mobileclientVersion, mobileClient.metadata.name, mobileClient, context)
+      return DataService.update(mobileclientVersion, mobileClient.metadata.name, mobileClient, context);
     };
 
     return {
