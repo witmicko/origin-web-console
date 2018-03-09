@@ -5,7 +5,7 @@ var N = this, D = t("isIE")();
 e.projectName = a.project;
 var A = a.isHomePage;
 N.catalogLandingPageEnabled = !d.DISABLE_SERVICE_CATALOG_LANDING_PAGE;
-var B = t("annotation"), L = t("canI"), V = t("buildConfigForBuild"), O = t("deploymentIsInProgress"), U = t("imageObjectRef"), F = t("isJenkinsPipelineStrategy"), x = t("isNewerResource"), M = t("label"), q = t("podTemplate"), z = i.getPreferredVersion("buildconfigs"), H = i.getPreferredVersion("builds"), G = i.getPreferredVersion("appliedclusterresourcequotas"), K = i.getPreferredVersion("daemonsets"), W = i.getPreferredVersion("deploymentconfigs"), Q = i.getPreferredVersion("deployments"), J = i.getPreferredVersion("horizontalpodautoscalers"), Y = i.getPreferredVersion("imagestreams"), Z = i.getPreferredVersion("limitranges"), X = i.getPreferredVersion("pods"), ee = i.getPreferredVersion("replicasets"), te = i.getPreferredVersion("replicationcontrollers"), ne = i.getPreferredVersion("resourcequotas"), re = i.getPreferredVersion("routes"), ae = i.getPreferredVersion("servicebindings"), oe = i.getPreferredVersion("clusterserviceclasses"), ie = i.getPreferredVersion("serviceinstances"), se = i.getPreferredVersion("clusterserviceplans"), ce = i.getPreferredVersion("services"), le = i.getPreferredVersion("statefulsets"), ue = i.getPreferredVersion("templates");
+var B = t("annotation"), L = t("canI"), V = t("buildConfigForBuild"), O = t("deploymentIsInProgress"), U = t("imageObjectRef"), F = t("isJenkinsPipelineStrategy"), x = t("isNewerResource"), M = t("label"), q = t("podTemplate"), z = i.getPreferredVersion("buildconfigs"), H = i.getPreferredVersion("builds"), G = i.getPreferredVersion("appliedclusterresourcequotas"), K = i.getPreferredVersion("daemonsets"), W = i.getPreferredVersion("deploymentconfigs"), J = i.getPreferredVersion("deployments"), Q = i.getPreferredVersion("horizontalpodautoscalers"), Y = i.getPreferredVersion("imagestreams"), Z = i.getPreferredVersion("limitranges"), X = i.getPreferredVersion("pods"), ee = i.getPreferredVersion("replicasets"), te = i.getPreferredVersion("replicationcontrollers"), ne = i.getPreferredVersion("resourcequotas"), re = i.getPreferredVersion("routes"), ae = i.getPreferredVersion("servicebindings"), oe = i.getPreferredVersion("clusterserviceclasses"), ie = i.getPreferredVersion("serviceinstances"), se = i.getPreferredVersion("clusterserviceplans"), ce = i.getPreferredVersion("services"), le = i.getPreferredVersion("statefulsets"), ue = i.getPreferredVersion("templates");
 N.buildConfigsInstantiateVersion = i.getPreferredVersion("buildconfigs/instantiate");
 var de, me, pe = {}, fe = {}, ge = {}, ve = N.state = {
 alerts: {},
@@ -200,11 +200,11 @@ _.assign(t, n);
 }), Oe(e, t);
 }, We = function() {
 _.each(N.deployments, Ke);
-}, Qe = function() {
+}, Je = function() {
 xe(N.replicationControllers), xe(N.replicaSets), xe(N.statefulSets), xe(N.daemonSets), xe(N.monopods);
-}, Je = _.debounce(function() {
+}, Qe = _.debounce(function() {
 e.$evalAsync(function() {
-Qe(), He(), We();
+Je(), He(), We();
 });
 }, 500), Ye = function(e) {
 _.isEmpty(e) || (b.addLabelSuggestionsFromResources(e, pe), "pipeline" !== N.viewBy && b.setLabelSuggestions(pe));
@@ -404,14 +404,14 @@ kind: "DaemonSet"
 i || _.some(N.pods, c) && s();
 };
 jt.push(m.watch(X, r, function(e, t) {
-N.pods = e.by("metadata.name"), et(), a(), Je(), st(N.monopods), xe(N.monopods), Ye(N.monopods), $e(), t && "ADDED" !== t || l(), S.log("pods (subscribe)", N.pods);
+N.pods = e.by("metadata.name"), et(), a(), Qe(), st(N.monopods), xe(N.monopods), Ye(N.monopods), $e(), t && "ADDED" !== t || l(), S.log("pods (subscribe)", N.pods);
 })), jt.push(m.watch(te, r, function(e) {
 N.replicationControllers = e.by("metadata.name"), rt(), st(N.vanillaReplicationControllers), st(N.monopods), xe(N.vanillaReplicationControllers), Ye(N.vanillaReplicationControllers), wt(), $e(), S.log("replicationcontrollers (subscribe)", N.replicationControllers);
 })), jt.push(m.watch(W, r, function(e) {
 N.deploymentConfigs = e.by("metadata.name"), rt(), st(N.deploymentConfigs), st(N.vanillaReplicationControllers), Ye(N.deploymentConfigs), We(), bt(), St(), wt(), $e(), S.log("deploymentconfigs (subscribe)", N.deploymentConfigs);
 })), jt.push(m.watch(ee, r, function(e) {
 N.replicaSets = e.by("metadata.name"), ot(), st(N.vanillaReplicaSets), st(N.monopods), xe(N.vanillaReplicaSets), Ye(N.vanillaReplicaSets), wt(), $e(), S.log("replicasets (subscribe)", N.replicaSets);
-})), jt.push(m.watch(Q, r, function(e) {
+})), jt.push(m.watch(J, r, function(e) {
 de = e.by("metadata.uid"), N.deployments = _.sortBy(de, "metadata.name"), ot(), st(N.deployments), st(N.vanillaReplicaSets), Ye(N.deployments), wt(), $e(), S.log("deployments (subscribe)", N.deploymentsByUID);
 })), jt.push(m.watch(H, r, function(e) {
 ve.builds = e.by("metadata.name"), Ct(), S.log("builds (subscribe)", ve.builds);
@@ -437,7 +437,7 @@ N.buildConfigs = e.by("metadata.name"), pt(), bt(), Ct(), $e(), S.log("buildconf
 }, {
 poll: D,
 pollInterval: 6e4
-})), jt.push(m.watch(J, r, function(e) {
+})), jt.push(m.watch(Q, r, function(e) {
 N.horizontalPodAutoscalers = e.by("metadata.name"), ut(), S.log("autoscalers (subscribe)", N.horizontalPodAutoscalers);
 }, {
 poll: D,
@@ -568,6 +568,36 @@ r.overlayPanelVisible = !0;
 r.overlayPanelVisible = !1;
 }, r.$onChanges = function() {
 i();
+};
+}
+
+function MobileClientConfigCtrl(e, t, n) {
+var r = this, a = [];
+r.$onInit = function() {
+function o(e) {
+r.configmaps = e;
+var t = filterExcludedServices(r.services, r.mobileClient);
+r.serviceConfig = getServiceConfig(e, t), r.prettyConfig = getClientConfig(r.mobileClient, r.serviceConfig, n);
+}
+var i = {
+namespace: _.get(r, "mobileClient.metadata.namespace")
+};
+t.watch(e.getPreferredVersion("serviceinstances"), i, function(n) {
+r.services = n.by("metadata.name"), t.list(e.getPreferredVersion("configmaps"), i, o, {
+errorNotification: !1
+});
+}, {
+errorNotification: !1
+}), a.push(t.watch(e.getPreferredVersion("configmaps"), i, o, {
+errorNotification: !1
+}));
+}, r.$onChanges = function(e) {
+if (e.mobileClient && r.configmaps && r.services) {
+var t = filterExcludedServices(r.services, r.mobileClient);
+r.serviceConfig = getServiceConfig(r.configmaps, t), r.prettyConfig = getClientConfig(r.mobileClient, r.serviceConfig, n);
+}
+}, r.$onDestroy = function() {
+t.unwatchAll(a);
 };
 }
 
@@ -11769,7 +11799,47 @@ keywords: "="
 },
 templateUrl: "views/catalog/_template.html"
 };
-}), angular.module("openshiftConsole").directive("podMetrics", [ "$filter", "$interval", "$parse", "$timeout", "$q", "$rootScope", "ChartsService", "ConversionService", "MetricsCharts", "MetricsService", "ModalsService", "usageValueFilter", function(e, t, n, r, a, o, i, s, c, l, u, d) {
+}), angular.module("openshiftConsole").component("mobileClientConfig", {
+bindings: {
+mobileClient: "<"
+},
+templateUrl: "views/mobile-client-config.html",
+controller: [ "APIService", "DataService", "API_CFG", MobileClientConfigCtrl ]
+});
+
+var filterExcludedServices = function(e, t) {
+return _.filter(e, function(e, n) {
+return -1 === _.indexOf(_.get(t, "spec.excludedServices"), n);
+});
+}, getServiceConfig = function(e, t) {
+return _(e.by("metadata.name")).filter(function(e) {
+return -1 !== _.findIndex(t, {
+metadata: {
+labels: {
+serviceName: _.get(e, "metadata.name")
+}
+}
+});
+}).map(function(e) {
+return {
+id: _.get(e, "metadata.name"),
+name: _.get(e, "metadata.name"),
+type: e.data.type,
+url: e.data.uri,
+config: e.data
+};
+}).value();
+}, getClientConfig = function(e, t, n) {
+return JSON.stringify({
+version: 1,
+clusterName: n.openshift.hostPort,
+namespace: _.get(e, "metadata.namespace"),
+clientId: _.get(e, "metadata.name"),
+services: t
+}, null, "  ");
+};
+
+angular.module("openshiftConsole").directive("podMetrics", [ "$filter", "$interval", "$parse", "$timeout", "$q", "$rootScope", "ChartsService", "ConversionService", "MetricsCharts", "MetricsService", "ModalsService", "usageValueFilter", function(e, t, n, r, a, o, i, s, c, l, u, d) {
 return {
 restrict: "E",
 scope: {
@@ -13883,29 +13953,40 @@ templateUrl: "views/directives/_service-binding.html"
 });
 }(), function() {
 angular.module("openshiftConsole").component("mobileClientRow", {
-controller: [ "$scope", "$filter", "$routeParams", "APIService", "AuthorizationService", "DataService", "ListRowUtils", "Navigate", "ProjectsService", function(e, t, n, r, a, o, i, s, c) {
-var l = this;
-l.installType = "", _.extend(l, i.ui), l.$onChanges = function(e) {
-if (e.apiObject) switch (l.bundleDisplay = l.apiObject.spec.appIdentifier, l.clientType = l.apiObject.spec.clientType.toUpperCase(), l.apiObject.spec.clientType) {
+controller: [ "$filter", "$routeParams", "APIService", "AuthorizationService", "DataService", "ListRowUtils", "Navigate", function(e, t, n, r, a, o, i) {
+var s = this, c = n.getPreferredVersion("serviceinstances"), l = e("isServiceInstanceReady"), u = e("isMobileService");
+s.installType = "", _.extend(s, o.ui), s.$onInit = function() {
+var e = {
+namespace: _.get(s, "apiObject.metadata.namespace")
+};
+a.watch(c, e, function(e) {
+s.services = _.filter(e.by("metadata.name"), function(e) {
+return u(e) && l(e);
+});
+}, {
+errorNotification: !1
+});
+}, s.$onChanges = function(e) {
+if (e.apiObject) switch (s.bundleDisplay = s.apiObject.spec.appIdentifier, s.clientType = s.apiObject.spec.clientType.toUpperCase(), s.apiObject.spec.clientType) {
 case "android":
-l.installType = "gradle";
+s.installType = "gradle";
 break;
 
 case "iOS":
-l.installType = "cocoapods";
+s.installType = "cocoapods";
 break;
 
 case "cordova":
-l.installType = "npm";
+s.installType = "npm";
 }
-}, l.mobileclientVersion = {
+}, s.mobileclientVersion = {
 group: "mobile.k8s.io",
 version: "v1alpha1",
 resource: "mobileclients"
-}, l.actionsDropdownVisible = function() {
-return !_.get(l.apiObject, "metadata.deletionTimestamp") && a.canI(l.mobileclientVersion, "delete");
-}, l.projectName = n.project, l.browseCatalog = function() {
-s.toProjectCatalog(l.projectName);
+}, s.actionsDropdownVisible = function() {
+return !_.get(s.apiObject, "metadata.deletionTimestamp") && r.canI(s.mobileclientVersion, "delete");
+}, s.projectName = t.project, s.browseCatalog = function() {
+i.toProjectCatalog(s.projectName);
 };
 } ],
 controllerAs: "row",
@@ -16333,6 +16414,10 @@ return _.get(e, [ "ENABLE_TECH_PREVIEW_FEATURE", t ], !1);
 } ]).filter("isNonPrintable", function() {
 return function(e) {
 return !!e && /[\x00-\x09\x0E-\x1F]/.test(e);
+};
+}), angular.module("openshiftConsole").filter("isMobileService", function() {
+return function(e) {
+return "enabled" === _.get(e, "metadata.labels.mobile");
 };
 }), angular.module("openshiftConsole").factory("logLinks", [ "$anchorScroll", "$document", "$location", "$window", function(e, t, n, r) {
 var a = _.template([ "/#/discover?", "_g=(", "time:(", "from:now-1w,", "mode:relative,", "to:now", ")", ")", "&_a=(", "columns:!(kubernetes.container_name,message),", "index:'<%= index %>',", "query:(", "query_string:(", "analyze_wildcard:!t,", 'query:\'kubernetes.pod_name:"<%= podname %>" AND kubernetes.namespace_name:"<%= namespace %>"\'', ")", "),", "sort:!('@timestamp',desc)", ")", "#console_container_name=<%= containername %>", "&console_back_url=<%= backlink %>" ].join(""));

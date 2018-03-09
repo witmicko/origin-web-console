@@ -3,7 +3,6 @@
 (function () {
   angular.module('openshiftConsole').component('mobileClientRow', {
     controller: [
-      '$scope',
       '$filter',
       '$routeParams',
       'APIService',
@@ -11,7 +10,6 @@
       'DataService',
       'ListRowUtils',
       'Navigate',
-      'ProjectsService',
       MobileAppRow,
     ],
     controllerAs: 'row',
@@ -22,11 +20,23 @@
     templateUrl: 'views/overview/_mobile-client-row.html'
   });
 
-  function MobileAppRow($scope, $filter, $routeParams, APIService, AuthorizationService, DataService, ListRowUtils, Navigate, ProjectsService) {
+  function MobileAppRow($filter, $routeParams, APIService, AuthorizationService, DataService, ListRowUtils, Navigate) {
     var row = this;
+    var serviceInstancesVersion = APIService.getPreferredVersion('serviceinstances');
+    var isServiceInstanceReady = $filter('isServiceInstanceReady');
+    var isMobileService = $filter('isMobileService');
     row.installType = '';
 
     _.extend(row, ListRowUtils.ui);
+
+    row.$onInit = function() {
+      var context = {namespace: _.get(row, 'apiObject.metadata.namespace')};
+      DataService.watch(serviceInstancesVersion, context, function (serviceinstances){
+        row.services = _.filter(serviceinstances.by('metadata.name'), function(serviceInstance){
+          return isMobileService(serviceInstance) && isServiceInstanceReady(serviceInstance);
+        });
+      }, { errorNotification: false });
+    };
 
     row.$onChanges = function(changes) {
       if (changes.apiObject) {
