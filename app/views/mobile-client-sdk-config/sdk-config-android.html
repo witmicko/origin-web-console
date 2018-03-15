@@ -1,0 +1,196 @@
+<article>
+  <h2>Getting Started with AeroGear Services Android SDK</h2>
+  <p>Following guide provides general information for starting with AeroGear Services SDK.</p>
+  <h2 id="user-content-prerequisites">Prerequisites</h2>
+  <p>You will need the following installed on your system</p>
+  <ul>
+    <li>
+      <p>Android SDK or Android Studio from <a href="https://developer.android.com/studio/index.html" rel="nofollow">Google</a>
+      </p>
+    </li>
+  </ul>
+  <p>It is reccomended you have the following installed</p>
+
+  <ul>
+    <li>
+      <p>The latest version of <a href="http://openjdk.java.net/install/index.html" rel="nofollow">OpenJDK</a></p>
+    </li>
+  </ul>
+
+  <h2>Installing</h2>
+  <p>As of the writing of this guide, the Aerogear Android SDK is not in jcenter and needs to be installed manually.</p>
+  <h3>Clone and build the library</h3>
+
+  <pre>
+    git clone https://github.com/aerogear/aerogear-android-sdk
+    cd aerogear-android-sdk
+    ./gradlew install</pre>
+
+  <p>You can verify the install went well by checking your local maven repository</p>
+
+  <pre>
+    ls ~/.m2/repository/org/aerogear
+    # Should output auth core</pre>
+
+
+  <h2>Using the SDK</h2>
+
+  <h3>MavenLocal()</h3>
+
+  <p>If you are using a build of the SDK from source you will need to add mavenLocal() to the build.gradle file in your project’s root directory.</p>
+
+  <pre>
+  allprojects {
+      repositories {
+          mavenLocal() // Add This line
+          google()
+          jcenter()
+      }
+  }</pre>
+
+
+  <h3>Reference the Dependencies</h3>
+
+  <p>In the build.gradle file for your app you can begin adding dependencies provided by the sdk.</p>
+
+
+  <pre>
+  dependencies {
+      ...
+      implementation 'org.aerogear:core:5.0.0-SNAPSHOT'
+      implementation 'org.aerogear:auth:5.0.0-SNAPSHOT' //If you are using IDM services provided by KeyCloak
+  }</pre>
+
+
+  <h3>Using the SDK</h3>
+
+  <p>In an example you can use the SDK as follows</p>
+
+
+  <pre>
+  public class MyApplication extends Application {
+
+      private MobileCore mobileCore;
+      private MetricsService metricsService;
+
+      @Override
+      public void onCreate() {
+          super.onCreate();
+
+          mobileCore = MobileCore.init(this);
+          metricsService = mobileCore.getInstance(MetricsService.class);
+
+          metricsService.sendAppAndDeviceMetrics();
+      }
+
+      @Override
+      public void onTerminate() {
+          super.onTerminate();
+
+          mobileCore.destroy();
+      }
+
+  }</pre>
+
+
+  <h2>Bill of materials</h2>
+
+  <p>Our project provides a BOM artifact to lock the dependencies (direct and transitive) down to known compatible
+    versions.
+    Gradle itself does not offer such a mechanism but it is a well known and used concept in the Maven world (see <a
+      href="https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Dependency_Management"
+      rel="nofollow">Dependency Management</a>
+    ).</p>
+
+
+  <p>In order to bring this functionality to Gradle the Android SDK relies on the <a
+    href="https://github.com/spring-gradle-plugins/dependency-management-plugin">dependency management plugin</a>
+    provided by Spring. This plugin allows us to use a standard Maven BOM in a Gradle project.</p>
+
+  <h2>Setting up project to use any AeroGear Services SDK</h2>
+
+  <ol>
+    <li>
+      <p>Add gradle plugin to
+        At the top of your gradle build file (but below <code>buildscripts</code>) add the plugin itself:</p>
+    </li>
+  </ol>
+
+
+  <pre>
+  plugins {
+      id "io.spring.dependency-management" version "1.0.4.RELEASE"
+  }</pre>
+
+
+  <ol>
+    <li>
+      <p>Import bom plugin into your gradle config
+        Add following code before your <code>dependencies</code> add the <code>dependencyManagement</code> section that
+        refers to our BOM:</p>
+    </li>
+  </ol>
+
+
+  <pre>
+  dependencyManagement {
+      imports {
+          mavenBom 'org.jboss.aerogear:aerogear-android-sdk-bom:1.1.10'
+      }
+  }</pre>
+
+
+  <ol>
+    <li>
+      <p>In case your project contains multiple modules you need to apply this to all your subprojects. Make sure to
+        apply the previous steps to your parent modules <code>build.gradle</code> and wrap the <code>dependencyManagement</code>
+        section as follows:</p>
+    </li>
+  </ol>
+
+
+  <pre>
+  subprojects {
+      apply plugin: 'io.spring.dependency-management'
+
+      dependencyManagement {
+          imports {
+              mavenBom 'org.jboss.aerogear:aerogear-android-sdk-bom:1.1.10'
+          }
+      }
+  }</pre>
+
+
+  <ol>
+    <li>
+      <p>After applying this changes developers can import the dependencies that are listed in the BOM without
+        specifying a version:</p>
+    </li>
+  </ol>
+
+
+  <pre>
+  dependencies {
+      implementation group: 'org.aerogear', name: 'core'
+  }</pre>
+
+
+  <h2>Importing individual SDK</h2>
+
+
+  <p>Please follow individual SDK’s documentation to see how to add them to the project</p>
+
+
+  <ul>
+    <li>
+      <p><a href="https://github.com/aerogear/aerogear-android-sdk/blob/master/docs/getting-started/core.adoc">Core</a>
+      </p>
+    </li>
+    <li>
+      <p><a href="https://github.com/aerogear/aerogear-android-sdk/blob/master/docs/getting-started/auth.adoc">Auth</a>
+      </p>
+    </li>
+  </ul>
+
+
+</article>
