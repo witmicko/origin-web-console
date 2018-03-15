@@ -1,0 +1,79 @@
+<article>
+  <h2>Prerequisites</h2>
+  <p>To get started with the AeroGear iOS SDK, you can set up the SDK in your existing or new project. The SDK is
+    written in Swift. You can also
+    <a href="https://github.com/aerogear/aerogear-ios-sdk/blob/master/docs/example-app-guide.adoc">run the
+      example project</a>
+    to see how the SDK works.
+  </p>
+
+  <p>To use the AeroGear SDK for iOS, you will need the following installed on your development machine:</p>
+
+  <ul>
+    <li>
+      <p>iOS 9 or later</p>
+    </li>
+    <li>
+      <p>Xcode 9 or later</p>
+    </li>
+    <li>
+      <p><a href="https://cocoapods.org/" rel="nofollow">CocoaPods</a></p>
+    </li>
+  </ul>
+
+  <h3>CocoaPods</h3>
+
+  <p>1) The AeroGear SDK for iOS is available using the CocoaPods package manager.
+    If you have not installed CocoaPods, install it by running the command:</p>
+
+  <pre>
+  gem install cocoapods
+  pod setup</pre>
+
+  <p>2) In your project directory (the directory where your <code>.xcodeproj</code> file is), create a plain text file
+    named <code>Podfile</code> (without any file extension) and add the lines below. Replace <code>YourTarget</code>
+    with your actual target name.</p>
+
+  <p>Podfile</p>
+
+  <pre>
+    source 'https://github.com/CocoaPods/Specs.git'
+
+    platform :ios, '9.0'
+    use_frameworks!
+
+    target :'YourTarget' do
+        ## Require one of the AeroGear Services here
+        pod 'AeroGearServices/sync'
+        pod 'AeroGearServices/core'
+    end</pre>
+
+  <p>3) Then run the following command:</p>
+
+  <pre>pod install</pre>
+
+  <p>4) Open up <code>.xcworkspace</code> with Xcode and start using the SDK.</p>
+
+  <blockquote>
+    <p>Do not use <code>.xcodeproj</code>. If you open up a project file instead of a workspace, dependencies will not
+      be correctly configured.</p>
+  </blockquote>
+
+  <h2>Getting Started with Swift</h2>
+
+  <p>1) Import the AgsCore in the application .</p>
+
+  <pre>import AeroGearServices/core </pre>
+
+  <p>2) In the Swift file you want to use the SDK, import the appropriate library for the services you are using. The
+    header file import convention is <code>import AgsServiceName</code>, as in the following examples:</p>
+
+  <pre>import AeroGearServices/sync</pre>
+
+  <p>3) Use imported service library</p>
+
+  <p>Please follow each individual service documentation for more information
+    about usage.</p>
+
+</article>
+

@@ -676,5 +676,10 @@ angular.extend(window.OPENSHIFT_CONSTANTS, {
     'openshift-',
     'kubernetes-',
     'kube-'
-  ]
+  ],
+  MOBILE_CLIENT_VERSION: {
+    group: "mobile.k8s.io",
+    version: "v1alpha1",
+    resource: "mobileclients"
+  }
 });
