@@ -8,12 +8,18 @@
  */
 angular.module('openshiftConsole')
   .controller('MobileClientsController',
+<<<<<<< HEAD
       function ($filter,
+=======
+    function ($scope,
+              $filter,
+>>>>>>> d6f297187b8f7bb0afab8f1ee16e832d03281da5
               $routeParams,
               Constants,
               DataService,
               ProjectsService) {
 
+<<<<<<< HEAD
       var ctrl = this;
       ctrl.projectName = $routeParams.project;
       ctrl.emptyMessage = "Loading...";
@@ -23,6 +29,17 @@ angular.module('openshiftConsole')
         {
           title: "Mobile Clients",
           link: "project/" + ctrl.projectName + "/browse/mobile-clients"
+=======
+      $scope.projectName = $routeParams.project;
+      $scope.emptyMessage = "Loading...";
+      $scope.alerts = {};
+      $scope.imagesByDockerReference = {};
+      $scope.redirectUrl = "/project/" + $scope.projectName + "/overview";
+      $scope.breadcrumbs = [
+        {
+          title: "Mobile Clients",
+          link: "project/" + $scope.projectName + "/browse/mobile-clients"
+>>>>>>> d6f297187b8f7bb0afab8f1ee16e832d03281da5
         },
         {
           title: $routeParams.mobileclient
