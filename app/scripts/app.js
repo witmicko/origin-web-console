@@ -124,6 +124,10 @@ angular
         },
         reloadOnSearch: false
       })
+      .when('/project/:project/browse/mobile-clients/:mobileclient', {
+        templateUrl: 'views/browse/mobile-clients.html',
+        controller: 'MobileClientsController'
+      })
       .when('/project/:project/edit/yaml', {
         templateUrl: 'views/edit/yaml.html',
         controller: 'EditYAMLController'
