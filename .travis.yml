@@ -2,13 +2,24 @@ language: node_js
 node_js:
   - "6"
 before_script:
-  - make build 
   # FIXME:
   # This needs to be enabled again when we eliminate PhantomJS for Firefox
   # Even the unit tests require a browser
   # - export DISPLAY=:99.0
   # - sh -e /etc/init.d/xvfb start
   # - sleep 3 # give xvfb some time to start
+  - wget https://raw.githubusercontent.com/aerogear/aerogear-android-sdk/master/docs/getting-started/core.adoc -O ios.adoc
+  - docker run -v $TRAVIS_BUILD_DIR:/documents --name asciidoc-to-html asciidoctor/docker-asciidoctor asciidoctor -b html5 /documents/ios.adoc
+  - mv ios.html app/views/mobile-client-sdk-config/sdk-config-ios.html
+  - make build
+
+after_error:
+  - docker logs asciidoc-to-html
+
+after_failure:
+  - docker logs asciidoc-to-html
+
 script:
+
   - grunt test
   - hack/verify-dist.sh
