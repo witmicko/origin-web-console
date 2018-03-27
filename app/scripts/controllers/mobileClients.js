@@ -8,22 +8,21 @@
  */
 angular.module('openshiftConsole')
   .controller('MobileClientsController',
-    function ($scope,
-              $filter,
+      function ($filter,
               $routeParams,
               Constants,
               DataService,
               ProjectsService) {
 
-      $scope.projectName = $routeParams.project;
-      $scope.emptyMessage = "Loading...";
-      $scope.alerts = {};
-      $scope.imagesByDockerReference = {};
-      $scope.redirectUrl = "/project/" + $scope.projectName + "/overview";
-      $scope.breadcrumbs = [
+      var ctrl = this;
+      ctrl.projectName = $routeParams.project;
+      ctrl.emptyMessage = "Loading...";
+      ctrl.alerts = {};
+      ctrl.redirectUrl = "/project/" + ctrl.projectName + "/overview";
+      ctrl.breadcrumbs = [
         {
           title: "Mobile Clients",
-          link: "project/" + $scope.projectName + "/browse/mobile-clients"
+          link: "project/" + ctrl.projectName + "/browse/mobile-clients"
         },
         {
           title: $routeParams.mobileclient
@@ -35,30 +34,30 @@ angular.module('openshiftConsole')
       ProjectsService
         .get($routeParams.project)
         .then(_.spread(function(project, context) {
-          $scope.project = project;
-          $scope.projectContext = context;
+          ctrl.project = project;
+          ctrl.projectContext = context;
 
           DataService.get(Constants.MOBILE_CLIENT_VERSION, $routeParams.mobileclient, context, { errorNotification: false }).then(
             // success
             function(mobileClient) {
-              $scope.loaded = true;
-              $scope.mobileClient = mobileClient;
+              ctrl.loaded = true;
+              ctrl.mobileClient = mobileClient;
 
               // If we found the item successfully, watch for changes on it
               watches.push(DataService.watchObject(Constants.MOBILE_CLIENT_VERSION, $routeParams.mobileclient, context, function(mobileClient, action) {
                 if (action === "DELETED") {
-                  $scope.alerts["deleted"] = {
+                  ctrl.alerts["deleted"] = {
                     type: "warning",
                     message: "This mobile client has been deleted."
                   };
                 }
-                $scope.mobileClient = mobileClient;
+                ctrl.mobileClient = mobileClient;
               }));
             },
             // failure
             function(e) {
-              $scope.loaded = true;
-              $scope.alerts["load"] = {
+              ctrl.loaded = true;
+              ctrl.alerts["load"] = {
                 type: "error",
                 message: e.status === 404 ? "This mobile client can not be found, it may have been deleted." : "The mobile client details could not be loaded.",
                 details: $filter('getErrorDetails')(e)
@@ -66,7 +65,7 @@ angular.module('openshiftConsole')
             }
           );
 
-          $scope.$on('$destroy', function(){
+          ctrl.$onDestroy('$destroy', function(){
             DataService.unwatchAll(watches);
           });
         }));

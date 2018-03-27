@@ -5,7 +5,7 @@
       <alerts alerts="alerts"></alerts>
       <div>
         <h1 class="contains-actions">
-          <div class="pull-right dropdown" ng-if="mobileClient">
+          <div class="pull-right dropdown" ng-if="ctrl.mobileClient">
             <button type="button" class="dropdown-toggle btn btn-default actions-dropdown-btn hidden-xs" data-toggle="dropdown">
               Actions
               <span class="caret" aria-hidden="true"></span>
@@ -18,35 +18,37 @@
                 <delete-link
                   kind="MobileClient"
                   group="mobile.k8s.io"
-                  resource-name="{{mobileClient.metadata.name}}"
-                  project-name="{{mobileClient.metadata.namespace}}"
+                  resource-name="{{ctrl.mobileClient.metadata.name}}"
+                  project-name="{{ctrl.mobileClient.metadata.namespace}}"
                   alerts="alerts"
-                  redirect-url={{redirectUrl}}>
+                  redirect-url={{ctrl.redirectUrl}}>
                 </delete-link>
               </li>
             </ul>
           </div>
-          {{mobileClient.spec.name}}
-          <small class="meta" ng-if="mobileClient">created <span am-time-ago="mobileClient.metadata.creationTimestamp"></span></small>
+          {{ctrl.mobileClient.spec.name}}
+          <small class="meta" ng-if="ctrl.mobileClient">created <span am-time-ago="ctrl.mobileClient.metadata.creationTimestamp"></span></small>
         </h1>
-        <labels labels="mobileClient.metadata.labels" clickable="true" kind="mobileClient" project-name="{{mobileClient.metadata.namespace}}" limit="3"></labels>
+        <labels labels="ctrl.mobileClient.metadata.labels" clickable="true" kind="mobileClient" project-name="{{ctrl.mobileClient.metadata.namespace}}" limit="3"></labels>
       </div>
     </div>
   </div>
   <div class="middle-content" persist-tab-state>
     <div class="container-fluid">
-      <div ng-if="!loaded">Loading...</div>
+      <div ng-if="!ctrl.loaded">Loading...</div>
       <div class="row">
-        <div class="col-md-12" ng-class="{ 'hide-tabs' : !mobileClient }">
+        <div class="col-md-12" ng-class="{ 'hide-tabs' : !ctrl.mobileClient }">
           <uib-tabset>
             <uib-tab active="selectedTab.configuration">
               <uib-tab-heading>Configuration</uib-tab-heading>
-              <pre>
-                {{mobileClient | json}}
-              </pre>
+              <pre>{{ctrl.mobileClient | json}}</pre>
             </uib-tab>
-            <uib-tab active="selectedTab.sdkSetup">
-              <uib-tab-heading>SDK Setup</uib-tab-heading>
+            <uib-tab active="selectedTab.sdkSetup" ng-if=mobileClient>
+              <div ng-switch="ctrl.mobileClient | mobileClientType">
+                <div ng-switch-when="iOS"><ng-include src="'views/mobile-client-sdk-config/sdk-config-ios.html'"></ng-include></div>
+                <div ng-switch-when="android"><ng-include src="'views/mobile-client-sdk-config/sdk-config-android.html'"></ng-include></div>
+                <div ng-switch-default><ng-include src="'views/mobile-client-sdk-config/sdk-config-default.html'"></ng-include></div>
+              </div>
             </uib-tab>
           </uib-tabset>
         </div>
