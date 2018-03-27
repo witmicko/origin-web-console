@@ -28,6 +28,9 @@ angular.module('openshiftConsole')
           title: $routeParams.mobileclient
         }
       ];
+      ctrl.$onDestroy = function(){
+        DataService.unwatchAll(watches);
+      };
 
       var watches = [];
 
@@ -64,9 +67,5 @@ angular.module('openshiftConsole')
               };
             }
           );
-
-          ctrl.$onDestroy('$destroy', function(){
-            DataService.unwatchAll(watches);
-          });
         }));
     });
