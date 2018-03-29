@@ -4,6 +4,7 @@
 angular.module('openshiftConsole').component('mobileClientConfig', {
     bindings: {
       mobileClient: '<',
+      projectName: '<'
     },
     templateUrl: 'views/mobile-client-config.html',
     controller: [
@@ -42,7 +43,7 @@ function MobileClientConfigCtrl(API_CFG, APIService, DataService, SecretsService
   var ctrl = this;
   var watches = [];
   ctrl.$onInit = function() {
-    var context = {namespace: _.get(ctrl, 'mobileClient.metadata.namespace')};
+    var context = {namespace: ctrl.projectName};
 
     watches.push(DataService.watch(APIService.getPreferredVersion('secrets'), context, updateClientSecret, {errorNotification: false}));
     function updateClientSecret(secrets) {

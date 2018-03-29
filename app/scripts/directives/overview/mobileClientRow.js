@@ -31,8 +31,8 @@
     _.extend(row, ListRowUtils.ui);
 
     row.$onInit = function() {
-      var context = {namespace: _.get(row, 'apiObject.metadata.namespace')};
-      DataService.watch(serviceInstancesVersion, context, function (serviceinstances){
+      row.context = {namespace: _.get(row, 'apiObject.metadata.namespace')};
+      DataService.watch(serviceInstancesVersion, row.context, function (serviceinstances){
         row.services = _.filter(serviceinstances.by('metadata.name'), function(serviceInstance){
           return ServiceInstancesService.fetchServiceClassForInstance(serviceInstance)
             .then(function (serviceClass){
