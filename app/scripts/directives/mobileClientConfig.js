@@ -11,7 +11,8 @@ angular.module('openshiftConsole').component('mobileClientConfig', {
       'APIService',
       'DataService',
       'SecretsService',
-      MobileClientConfigCtrl]
+      MobileClientConfigCtrl
+    ]
   });
 
 var getClientConfig = function(mobileClient, serviceConfig, clusterInfo) {
