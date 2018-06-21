@@ -131,7 +131,7 @@
                           <div>
                             <div class="form-group">
                               <label for="authentification-type">Authentication Type</label>
-                              <ui-select required input-id="authentification-type" ng-model="newClientBuild.authType" search-enabled="false">
+                              <ui-select required input-id="authentification-type-{{$id}}" ng-model="newClientBuild.authType" search-enabled="false">
                                 <ui-select-match>{{$select.selected.label}}</ui-select-match>
                                 <ui-select-choices repeat="type.id as type in authTypes">
                                   {{type.label}}
@@ -357,6 +357,21 @@
                           The entry name of the private key/certificate chain you want to use to sign your APK(s). This entry must exist in the key store uploaded. If your key store contains only one key entry, which is the most common case, you can leave this field blank.
                         </div>
                       </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="env-vars">Environment Variables</label>
+                      <key-value-editor
+                        entries="newClientBuild.envVars"
+                        key-placeholder="Key"
+                        value-placeholder="Value"
+                        key-validator="[A-Za-z_][A-Za-z0-9_]*"
+                        key-validator-error="Please enter a valid key"
+                        key-validator-error-tooltip="A valid environment variable name is an alphanumeric (a-z and 0-9) string beginning with a letter that may contain underscores."
+                        add-row-link="Add Environment Variable"
+                        cannot-sort
+                        show-header>
+                      </key-value-editor>                    
                     </div>
                   </dl>
                 </div>
