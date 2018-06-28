@@ -33,6 +33,7 @@
     var isServiceInstanceReady = $filter('isServiceInstanceReady');
     var isMobileClientEnabled = $filter('isMobileClientEnabled');
     var isMobileService = $filter('isMobileService');
+    var mobileBindingConsumerID = $filter('annotationName')('mobileBindingConsumerId');
     var watches = [];
     var boundServices = 'Bound Mobile Services';
     var unboundServices = 'Unbound Mobile Services';
@@ -101,14 +102,13 @@
     var startBindingsWatch = _.once(function(context) {
       watches.push(DataService.watch(serviceBindingsVersion, context, function(bindingsData) {
         row.bindings = _.filter(bindingsData.by('metadata.name'), function(binding) {
-          return _.get(binding.metadata.annotations, 'binding.aerogear.org/consumer') === _.get(row, 'apiObject.metadata.name') && isBindingReady(binding);
+          return _.get(binding, ['metadata', 'annotations', mobileBindingConsumerID]) === _.get(row, 'apiObject.metadata.name') && isBindingReady(binding);
         });
         row.updateServicesInfo();
       }));
     });
     var startBuildWatch = _.once(function(context) {
       watches.push(DataService.watch(buildsVersion, context, function(buildsData) {
-        // Filter builds by mobile client id
         var builds = _.filter(buildsData.by('metadata.name'), function(build) {
           return _.get(build, 'metadata.labels.mobile-client-id') === _.get(row, 'apiObject.metadata.name');
         });
